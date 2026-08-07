@@ -1,32 +1,32 @@
-name: FyqyClaw Auto Release
+name: Build & Release Windows Installer
+
 on:
   push:
     tags:
       - 'v*'
 
-permissions:
-  contents: write
-
 jobs:
   build:
     runs-on: windows-latest
+    permissions:
+      contents: write   # 关键：允许action创建release、上传资产
+
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
+          cache: 'npm'
 
       - name: Install dependencies
-        working-directory: ./electron
-        run: npm install
+        run: npm ci
 
       - name: Build windows installer
-        working-directory: ./electron
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # 内置token，无需手动创建PAT
         run: npm run build:win
-
-      - name: Upload Release
-        uses: softprops/action-gh-release@v2
-        with:
-          files: electron/dist/*.exe
