@@ -1,5 +1,8 @@
 # Dependencies
 node_modules/
+# Not committed: Windows-generated lockfile breaks cross-platform optional deps (rollup native modules).
+# Each CI platform resolves fresh via `npm install`.
+/package-lock.json
 
 # Build output
 dist/
