@@ -1,7 +1,8 @@
 {
   "name": "fyqyclaw",
-  "version": "1.0.0-dev.1",
+  "version": "0.1.1",
   "description": "FyqyClaw（飞扬企源AI）- 全流程AI开发工具",
+  "author": "wch887292",
   "main": "dist-electron/main.js",
   "scripts": {
     "dev": "vite",
