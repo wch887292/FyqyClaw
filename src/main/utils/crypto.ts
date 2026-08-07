@@ -13,21 +13,45 @@
  *   - 控制台日志自动屏蔽密钥明文
  */
 
-// 会话盐值 — 每次应用启动随机生成，不可持久化
+// 会话盐值 — 持久化到 localStorage，保证同一设备跨重启可稳定解密（非明文密钥，仅作混淆盐）
 let sessionSalt = ''
+const SALT_STORAGE_KEY = 'fyqy_crypto_salt'
 
 function getSessionSalt(): string {
-  if (!sessionSalt) {
-    const bytes = new Uint8Array(16)
-    crypto.getRandomValues(bytes)
-    sessionSalt = Array.from(bytes).map(b => b.toString(16).padStart(2, '0')).join('')
+  if (sessionSalt) return sessionSalt
+  try {
+    if (typeof localStorage !== 'undefined') {
+      const stored = localStorage.getItem(SALT_STORAGE_KEY)
+      if (stored) {
+        sessionSalt = stored
+        return sessionSalt
+      }
+      const bytes = new Uint8Array(16)
+      crypto.getRandomValues(bytes)
+      sessionSalt = Array.from(bytes).map(b => b.toString(16).padStart(2, '0')).join('')
+      localStorage.setItem(SALT_STORAGE_KEY, sessionSalt)
+      return sessionSalt
+    }
+  } catch {
+    // 忽略隐私模式 / 存储不可用等异常
   }
+  // 兜底：内存随机盐（单次会话内仍可用）
+  const bytes = new Uint8Array(16)
+  crypto.getRandomValues(bytes)
+  sessionSalt = Array.from(bytes).map(b => b.toString(16).padStart(2, '0')).join('')
   return sessionSalt
 }
 
 /** 重置会话盐值（用于测试或安全刷新） */
 export function resetSessionSalt(): void {
   sessionSalt = ''
+  try {
+    if (typeof localStorage !== 'undefined') {
+      localStorage.removeItem(SALT_STORAGE_KEY)
+    }
+  } catch {
+    // 忽略
+  }
 }
 
 /**
@@ -49,17 +73,16 @@ function getFingerprint(): string {
 /**
  * 从指纹派生固定长度的密钥
  */
-function deriveKey(fingerprint: string, salt: string): number[] {
-  const combined = fingerprint + '::' + salt
+function deriveKey(salt: string): number[] {
   let hash = 0
-  for (let i = 0; i < combined.length; i++) {
-    const char = combined.charCodeAt(i)
+  for (let i = 0; i < salt.length; i++) {
+    const char = salt.charCodeAt(i)
     hash = ((hash << 5) - hash) + char
     hash = hash & hash // Convert to 32-bit integer
   }
-  // 生成 32 字节密钥数组
+  // 生成 32 字节密钥数组（仅依赖稳定盐值，跨重启 / 改变屏幕参数也可解密）
   const key: number[] = []
-  let seed = Math.abs(hash)
+  let seed = Math.abs(hash) || 1
   for (let i = 0; i < 32; i++) {
     seed = (seed * 1103515245 + 12345) & 0x7fffffff
     key.push(seed % 256)
@@ -156,9 +179,8 @@ function customBase64Decode(encoded: string): number[] {
  */
 export function encryptApiKey(plaintext: string): string {
   if (!plaintext) return ''
-  const fingerprint = getFingerprint()
   const salt = getSessionSalt()
-  const key = deriveKey(fingerprint, salt)
+  const key = deriveKey(salt)
 
   // 将明文转为字节数组
   const bytes: number[] = []
@@ -182,9 +204,8 @@ export function encryptApiKey(plaintext: string): string {
 export function decryptApiKey(encrypted: string): string {
   if (!encrypted) return ''
   try {
-    const fingerprint = getFingerprint()
     const salt = getSessionSalt()
-    const key = deriveKey(fingerprint, salt)
+    const key = deriveKey(salt)
 
     // 三层解密（逆向顺序）
     const layer2 = customBase64Decode(encrypted)

@@ -5,7 +5,7 @@ import { useEditorStore } from '../stores/editor-store'
 import { FileTree } from '../../ide/file-tree/FileTree'
 import { GitPanel } from '../../ide/git/GitPanel'
 import { useResizable } from '../hooks/useResizable'
-import { openFolderDialog } from '../utils/electron-bridge'
+import { openFolderDialog, readFile } from '../utils/electron-bridge'
 import { mockExtensions, mockSkills, mockAgents, type SkillEntry } from '../mock-data'
 import { BrowserPanel } from './BrowserPanel'
 import { CrawlerPanel } from './CrawlerPanel'
@@ -251,7 +251,6 @@ function SearchPanel() {
 
       // If we have file paths, try to read and search them
       if (filePaths.length > 0) {
-        const { readFile } = await import('../utils/electron-bridge')
         for (const filePath of filePaths) {
           // Skip if already searched via open tabs
           if (openTabs.some(t => t.id === filePath)) continue

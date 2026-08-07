@@ -34,3 +34,9 @@ Thumbs.db
 *.exe
 *.AppImage
 release/
+
+# Experimental / leftover config & test files (kept locally, not tracked)
+test-command-palette.html
+vite.browser.config.ts
+vite.config.web.ts
+vite.web-test.config.ts

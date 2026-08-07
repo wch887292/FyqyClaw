@@ -13,6 +13,7 @@
     "build:win": "vite build && electron-builder --win --publish never",
     "build:mac": "vite build && electron-builder --mac --publish never",
     "build:mac:local": "vite build && electron-builder --mac --x64 --publish never",
+    "typecheck": "tsc --noEmit",
     "build:linux": "vite build && electron-builder --linux --publish never"
   },
   "build": {
