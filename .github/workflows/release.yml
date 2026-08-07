@@ -18,7 +18,7 @@ jobs:
         with:
           node-version: 22
           cache: npm
-      - run: npm ci
+      - run: npm install
       - name: Build Windows installer
         run: npm run build:win
       - uses: actions/upload-artifact@v4
@@ -41,7 +41,7 @@ jobs:
         with:
           node-version: 22
           cache: npm
-      - run: npm ci
+      - run: npm install
       - name: Build macOS artifacts
         run: npm run build:mac
       - uses: actions/upload-artifact@v4
@@ -57,7 +57,7 @@ jobs:
         with:
           node-version: 22
           cache: npm
-      - run: npm ci
+      - run: npm install
       - name: Build Linux artifacts
         run: npm run build:linux
       - uses: actions/upload-artifact@v4
