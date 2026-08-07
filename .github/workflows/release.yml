@@ -1,4 +1,4 @@
-name: Build & Auto Release
+name: Build & Release
 
 on:
   push:
@@ -16,23 +16,24 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: 'npm'
+          cache: npm
 
       - name: Install dependencies
         run: npm ci
 
-      - name: Build
+      - name: Build Windows installer
         run: npm run build:win
 
-      # 关闭builder内部github发布，只本地打包
-      # package.json里去掉 "github":{"release":true}
-
-      - name: Create Release & Upload Assets
+      - name: Create GitHub Release & upload artifacts
         uses: softprops/action-gh-release@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
+          # 匹配release目录下面所有需要上传的文件
           files: |
             release/*.exe
             release/*.blockmap
             release/latest.yml
+          generate_release_notes: true   # 自动生成变更日志
+          draft: false                   # 直接发布，不生成草稿
+          prerelease: false              # 正式版本，不是预发布
