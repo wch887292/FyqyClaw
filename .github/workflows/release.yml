@@ -5,7 +5,7 @@ on:
     tags:
       - 'v*'
 
-# 允许 workflow 创建/写入 GitHub Release，否则 action-gh-release 上传会 403
+# 允许 workflow 创建/写入 GitHub Release
 permissions:
   contents: write
 
@@ -13,29 +13,65 @@ jobs:
   build-windows:
     runs-on: windows-latest
     steps:
-      - name: Checkout source code
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
-
-      - name: Install dependencies
-        run: npm ci
-
+      - run: npm ci
       - name: Build Windows installer
         run: npm run build:win
+      - uses: actions/upload-artifact@v4
+        with:
+          name: windows-artifacts
+          path: release/*
 
+  build-macos:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Build macOS artifacts
+        run: npm run build:mac
+      - uses: actions/upload-artifact@v4
+        with:
+          name: macos-artifacts
+          path: release/*
+
+  build-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Build Linux artifacts
+        run: npm run build:linux
+      - uses: actions/upload-artifact@v4
+        with:
+          name: linux-artifacts
+          path: release/*
+
+  # 等三个平台都构建完，统一创建一次 Release 并上传所有产物
+  release:
+    needs: [build-windows, build-macos, build-linux]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+          merge-multiple: true
       - name: Create GitHub Release & upload artifacts
         uses: softprops/action-gh-release@v2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          files: |
-            release/*.exe
-            release/*.blockmap
+          files: artifacts/**
           generate_release_notes: true
           draft: false
           prerelease: false
