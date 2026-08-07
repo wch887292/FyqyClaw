@@ -3,6 +3,25 @@ import path from 'path'
 import fs from 'fs'
 import { spawn } from 'child_process'
 
+// ──────────────────────────────────────────────────────────────
+// 修复 Windows 安装后主窗口内容区「纯黑」的问题
+// 部分显卡/驱动、远程桌面(RDP)、虚拟机环境下，Chromium 的 GPU 合成会失败，
+// 表现为：原生标题栏/菜单正常，但网页内容区渲染为纯黑。
+// 关闭硬件加速回退到软件渲染，并允许 WebGL(Monaco / xterm) 走 SwiftShader。
+// ──────────────────────────────────────────────────────────────
+app.disableHardwareAcceleration()
+app.commandLine.appendSwitch('enable-unsafe-swiftshader')
+
+// 渲染进程异常日志（黑屏 / 崩溃时便于定位，文件在 userData 目录）
+function logRendererError(...args: unknown[]) {
+  try {
+    const p = path.join(app.getPath('userData'), 'renderer-error.log')
+    fs.appendFileSync(p, `[${new Date().toISOString()}] ${args.map((a) => String(a)).join(' ')}\n`)
+  } catch {
+    /* ignore */
+  }
+}
+
 let mainWindow: BrowserWindow | null = null
 
 function createWindow() {
@@ -12,6 +31,7 @@ function createWindow() {
     minWidth: 1024,
     minHeight: 700,
     title: 'FyqyClaw - 飞扬企源AI',
+    backgroundColor: '#1e1e1e',
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       contextIsolation: true,
@@ -24,9 +44,22 @@ function createWindow() {
   } else {
     mainWindow.loadFile(path.join(__dirname, '../dist/index.html'))
   }
+
+  // 诊断：把渲染进程加载失败写入日志，避免「静默黑屏」无法排查
+  mainWindow.webContents.on('did-fail-load', (_event, errorCode, errorDescription, validatedURL) => {
+    logRendererError('did-fail-load', errorCode, errorDescription, validatedURL)
+  })
+  // 调试开关：FYQY_DEBUG=1 时自动打开 DevTools
+  if (process.env.FYQY_DEBUG) {
+    mainWindow.webContents.openDevTools({ mode: 'detach' })
+  }
 }
 
 app.whenReady().then(createWindow)
+
+app.on('render-process-gone', (_event, _window, details) => {
+  logRendererError('render-process-gone', details?.reason)
+})
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {

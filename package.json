@@ -1,6 +1,6 @@
 {
   "name": "fyqyclaw",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "FyqyClaw（飞扬企源AI）- 全流程AI开发工具",
   "author": "wch887292 <wch887292@users.noreply.github.com>",
   "main": "dist-electron/main.js",
