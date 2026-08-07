@@ -27,6 +27,7 @@ jobs:
           path: release/*
 
   build-macos:
+    if: false  # 临时跳过：尚未配置签名 Secrets，避免浪费 macos 额度；配好 Secrets 后删除此行
     runs-on: macos-latest
     env:
       # macOS 代码签名 + 公证：以下 Secrets 在仓库 Settings 配置；未配置则自动跳过、按未签名构建
