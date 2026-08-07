@@ -1,34 +1,30 @@
 name: Build and Release
 
-# 推送 v 开头的 tag 时触发（如 v0.1.1）
 on:
   push:
     tags:
       - 'v*'
 
-# 关键1：授予 workflow 写仓库内容的权限，否则上传 Release 会 403
 permissions:
-  contents: write
+  contents: write          # 第 4 步的权限，写在这里也生效
 
 jobs:
   release:
-    runs-on: windows-latest   # Windows 打包 nsis 用这个
+    runs-on: windows-latest
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}   # 挂 job 级，所有 step 都能拿到
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'npm'          # 如果用 yarn/pnpm 改成对应值
+          cache: 'npm'
 
-      - name: Install dependencies
-        run: npm ci             # 用 yarn 则 yarn install --frozen-lockfile
+      - run: npm ci
 
       - name: Build & Publish
-        run: npx electron-builder --win --x64 --publish always
+        run: npm run build:win
         env:
-          # 关键2：注入 token。GITHUB_TOKEN 是 Actions 自动提供的，无需手动创建
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}   # 再挂一层，双保险
