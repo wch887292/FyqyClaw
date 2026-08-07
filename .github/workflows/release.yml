@@ -23,7 +23,8 @@ jobs:
       - uses: actions/upload-artifact@v5
         with:
           name: windows-artifacts
-          path: release/*
+          # 只上传真正的安装包，排除 win-unpacked 展开目录里的零散文件
+          path: release/*.exe
 
   build-macos:
     if: false  # 临时跳过：尚未配置签名 Secrets，避免浪费 macos 额度；配好 Secrets 后删除此行
@@ -61,13 +62,15 @@ jobs:
       - uses: actions/upload-artifact@v5
         with:
           name: linux-artifacts
-          path: release/*
+          # 只上传真正的安装包，排除 linux-unpacked 展开目录里的零散文件
+          path: |
+            release/*.AppImage
+            release/*.deb
 
-  # 等三个平台都构建完，统一创建一次 Release 并上传所有产物
+  # 等平台构建完，统一删除旧 Release 并重建一次干净的 Release（只含安装包）
   release:
-    needs: [build-windows, build-macos, build-linux]
-    # macOS 未配置签名时会被 if:false 跳过(skipped)，默认 success() 条件会让本 job 也跳过；
-    # 改为「无失败且未取消」即运行，skipped 的 macos 不影响 Release 生成
+    needs: [build-windows, build-linux]
+    # macOS 未配置签名时会被 if:false 跳过(skipped)；改为「无失败且未取消」即运行
     if: ${{ !failure() && !cancelled() }}
     runs-on: ubuntu-latest
     steps:
@@ -76,15 +79,25 @@ jobs:
         with:
           path: artifacts
           merge-multiple: true
-      - name: Remove existing release for this tag (so re-runs produce a clean release)
+
+      - name: Delete any existing release for this tag (clean rebuild)
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh release delete "${{ github.ref_name }}" --yes || true
+        run: |
+          API="https://api.github.com/repos/${{ github.repository }}"
+          rel_id=$(curl -sS -H "Authorization: Bearer $GH_TOKEN" "$API/releases/tags/${{ github.ref_name }}" | jq -r '.id // empty')
+          if [ -n "$rel_id" ]; then
+            echo "Deleting stale release id $rel_id"
+            curl -sS -X DELETE -H "Authorization: Bearer $GH_TOKEN" "$API/releases/$rel_id"
+            echo "Deleted stale release."
+          else
+            echo "No existing release for ${{ github.ref_name }} — will create fresh."
+          fi
 
-      - name: Create GitHub Release & upload artifacts
+      - name: Create GitHub Release & upload installers only
         uses: softprops/action-gh-release@v2
         with:
-          # 只上传真正的安装包，排除 win-unpacked / linux-unpacked 展开后的内部文件
+          # 只上传真正的安装包，绝不带上 win-unpacked / linux-unpacked 的零散文件
           files: |
             artifacts/*.exe
             artifacts/*.AppImage
