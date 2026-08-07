@@ -1,0 +1,43 @@
+name: FyqyClaw Auto Release
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: |
+          cd electron
+          npm install
+
+      - name: Electron build windows
+        run: |
+          cd electron
+          npm run build:win
+
+      - name: Upload Windows artifact
+        uses: softprops/action-gh-release@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          files: |
+            electron/dist/*.exe
+          generate_release_notes: true
+          draft: false
+          prerelease: false
