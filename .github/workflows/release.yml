@@ -29,11 +29,10 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          # 匹配release目录下面所有需要上传的文件
           files: |
             release/*.exe
             release/*.blockmap
             release/latest.yml
-          generate_release_notes: true   # 自动生成变更日志
-          draft: false                   # 直接发布，不生成草稿
-          prerelease: false              # 正式版本，不是预发布
+          generate_release_notes: true
+          draft: false
+          prerelease: false
