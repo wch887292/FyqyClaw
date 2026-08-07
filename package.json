@@ -51,7 +51,8 @@
       ],
       "icon": "build/icon.png",
       "artifactName": "FyqyClaw-${version}-mac-${arch}.${ext}",
-      "category": "public.app-category.developer-tools"
+      "category": "public.app-category.developer-tools",
+      "hardenedRuntime": true
     },
     "dmg": {
       "title": "FyqyClaw ${version}",
