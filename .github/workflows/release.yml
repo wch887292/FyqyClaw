@@ -5,6 +5,10 @@ on:
     tags:
       - 'v*'
 
+# 允许 workflow 创建/写入 GitHub Release，否则 action-gh-release 上传会 403
+permissions:
+  contents: write
+
 jobs:
   build-windows:
     runs-on: windows-latest
