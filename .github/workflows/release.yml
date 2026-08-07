@@ -8,13 +8,10 @@ permissions:
   contents: write
 
 jobs:
-  build-windows:
+  build:
     runs-on: windows-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+      - uses: actions/checkout@v4
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -22,22 +19,14 @@ jobs:
           node-version: 20
 
       - name: Install dependencies
-        run: |
-          cd electron
-          npm install
+        working-directory: ./electron
+        run: npm install
 
-      - name: Electron build windows
-        run: |
-          cd electron
-          npm run build:win
+      - name: Build windows installer
+        working-directory: ./electron
+        run: npm run build:win
 
-      - name: Upload Windows artifact
+      - name: Upload Release
         uses: softprops/action-gh-release@v2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          files: |
-            electron/dist/*.exe
-          generate_release_notes: true
-          draft: false
-          prerelease: false
+          files: electron/dist/*.exe
