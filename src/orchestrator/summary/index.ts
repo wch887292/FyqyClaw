@@ -1,0 +1,1 @@
+export { ChangeSummaryGenerator } from './change-summary'

@@ -1,0 +1,8 @@
+export { CueEngine } from './engine'
+export { CompletionProvider } from './completion/provider'
+export { InlineCompletionProvider } from './completion/inline-provider'
+export { ChainCompletionProvider } from './completion/chain-provider'
+export { MultiLineEditor } from './completion/multi-line-edit'
+export { LanguageSupportProvider } from './completion/language-support'
+export type { LanguageDefinition, LanguageSnippet } from './completion/language-support'
+export { CodeAnalyzer } from './context/analyzer'

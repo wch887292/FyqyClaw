@@ -1,0 +1,202 @@
+:root {
+  --bg-primary: #1e1e1e;
+  --bg-secondary: #252526;
+  --bg-tertiary: #2d2d2d;
+  --bg-hover: #3c3c3c;
+  --text-primary: #cccccc;
+  --text-secondary: #969696;
+  --text-highlight: #ffffff;
+  --accent-blue: #0078d4;
+  --accent-green: #4ec9b0;
+  --accent-yellow: #dcdcaa;
+  --accent-red: #f44747;
+  --accent-orange: #ce9178;
+  --border-color: #3c3c3c;
+  --sidebar-width: 260px;
+  --panel-height: 250px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans SC', sans-serif;
+}
+
+/* ===== Light Theme ===== */
+[data-theme="light"] {
+  --bg-primary: #ffffff;
+  --bg-secondary: #f3f3f3;
+  --bg-tertiary: #e8e8e8;
+  --bg-hover: #e0e0e0;
+  --text-primary: #333333;
+  --text-secondary: #717171;
+  --text-highlight: #1a1a1a;
+  --accent-blue: #0066b8;
+  --accent-green: #1a8a6a;
+  --accent-yellow: #8a7a3a;
+  --accent-red: #d32f2f;
+  --accent-orange: #a5673a;
+  --border-color: #d4d4d4;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body, #root {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #424242;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #4f4f4f;
+}
+
+/* ===== Animations ===== */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateX(-50%) translateY(12px); }
+  to { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+@keyframes fadeOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-12px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes browserProgress {
+  0% { transform: translateX(-100%); }
+  50% { transform: translateX(200%); }
+  100% { transform: translateX(400%); }
+}
+
+/* ===== Transition Classes ===== */
+.fade-enter {
+  opacity: 0;
+}
+
+.fade-enter-active {
+  opacity: 1;
+  transition: opacity 0.15s ease-out;
+}
+
+.fade-exit {
+  opacity: 1;
+}
+
+.fade-exit-active {
+  opacity: 0;
+  transition: opacity 0.15s ease-out;
+}
+
+/* ===== Panel transitions ===== */
+.panel-enter {
+  animation: slideInLeft 0.15s ease-out;
+}
+
+.panel-exit {
+  animation: slideInRight 0.15s ease-out reverse;
+}
+
+/* ===== Tab transitions ===== */
+.tab-indicator {
+  transition: all 0.15s ease-out;
+}
+
+/* ===== Button hover effects ===== */
+.btn-icon {
+  transition: all 0.12s ease-out;
+  cursor: pointer;
+}
+
+.btn-icon:hover {
+  background: var(--bg-hover);
+}
+
+/* ===== Command palette animation ===== */
+.command-palette {
+  transform-origin: top center;
+}
+
+/* ===== Status bar animation ===== */
+.status-bar-mode {
+  transition: background 0.2s ease-out, transform 0.1s ease-out;
+}
+
+.status-bar-mode:hover {
+  transform: scale(1.02);
+}

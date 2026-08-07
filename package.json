@@ -1,0 +1,102 @@
+{
+  "name": "fyqyclaw",
+  "version": "1.0.0-dev.1",
+  "description": "FyqyClaw（飞扬企源AI）- 全流程AI开发工具",
+  "main": "dist-electron/main.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "electron:dev": "concurrently \"vite\" \"wait-on http://localhost:5173 && electron .\"",
+    "electron:build": "vite build && electron-builder",
+    "build:win": "vite build && electron-builder --win",
+    "build:mac": "vite build && electron-builder --mac",
+    "build:linux": "vite build && electron-builder --linux"
+  },
+  "build": {
+    "appId": "com.fyqy.fyqyclaw",
+    "productName": "FyqyClaw",
+    "directories": {
+      "output": "release",
+      "buildResources": "build"
+    },
+    "files": [
+      "dist/**/*",
+      "dist-electron/**/*"
+    ],
+    "extraResources": [],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": ["x64"]
+        }
+      ],
+      "icon": "build/icon-256.png",
+      "artifactName": "FyqyClaw-Setup-${version}-win-${arch}.${ext}"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "FyqyClaw",
+      "uninstallDisplayName": "FyqyClaw ${version}"
+    },
+    "mac": {
+      "target": [
+        { "target": "dmg", "arch": ["x64", "arm64"] },
+        { "target": "zip", "arch": ["x64", "arm64"] }
+      ],
+      "icon": "build/icon.png",
+      "artifactName": "FyqyClaw-${version}-mac-${arch}.${ext}",
+      "category": "public.app-category.developer-tools"
+    },
+    "dmg": {
+      "title": "FyqyClaw ${version}",
+      "contents": [
+        { "x": 130, "y": 220 },
+        { "x": 410, "y": 220, "type": "link", "path": "/Applications" }
+      ]
+    },
+    "linux": {
+      "target": [
+        { "target": "AppImage", "arch": ["x64"] },
+        { "target": "deb", "arch": ["x64"] }
+      ],
+      "icon": "build/icon.png",
+      "artifactName": "FyqyClaw-${version}-linux-${arch}.${ext}",
+      "category": "Development",
+      "synopsis": "全流程AI开发工具",
+      "description": "FyqyClaw - 深度融合AI大模型能力的全流程开发工具，支持IDE和SOLO双模式"
+    }
+  },
+  "dependencies": {
+    "@monaco-editor/react": "^4.6.0",
+    "clsx": "^2.1.1",
+    "immer": "^10.1.1",
+    "lucide-react": "^0.441.0",
+    "monaco-editor": "^0.52.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^6.26.0",
+    "xterm": "^5.3.0",
+    "xterm-addon-fit": "^0.8.0",
+    "xterm-addon-web-links": "^0.9.0",
+    "zustand": "^4.5.4"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "@vitejs/plugin-react": "^4.3.1",
+    "concurrently": "^8.2.2",
+    "electron": "^43.3.0",
+    "electron-builder": "^24.13.3",
+    "sharp": "^0.35.3",
+    "typescript": "^5.5.4",
+    "vite": "^5.4.2",
+    "vite-plugin-electron": "^0.28.7",
+    "vite-plugin-electron-renderer": "^0.14.5",
+    "wait-on": "^7.2.0"
+  }
+}

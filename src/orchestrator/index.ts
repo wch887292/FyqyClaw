@@ -1,0 +1,6 @@
+export { AgentEngine } from './agent/engine'
+export type { AgentCapability, ExecutionPlan, ExecutionStep, AgentStatus, SelfHealingConfig, ErrorReport, ChangeSummary, ChangeEntry } from './agent/types'
+export { TaskPlanner } from './planner/task-planner'
+export { ContextManager } from './context/context-manager'
+export { CodeReviewEngine } from './review/code-review'
+export { ChangeSummaryGenerator } from './summary/change-summary'

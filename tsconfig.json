@@ -1,0 +1,33 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "skipLibCheck": true,
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "jsx": "react-jsx",
+    "strict": true,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "noFallthroughCasesInSwitch": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"],
+      "@shared/*": ["src/shared/*"],
+      "@ide/*": ["src/ide/*"],
+      "@orchestrator/*": ["src/orchestrator/*"],
+      "@model-adapter/*": ["src/model-adapter/*"],
+      "@sandbox/*": ["src/sandbox/*"],
+      "@cue/*": ["src/cue-engine/*"],
+      "@api/*": ["src/api/*"],
+      "@plugin/*": ["src/plugin-system/*"],
+      "@mcp/*": ["src/mcp/*"],
+      "@skills/*": ["src/skills/*"]
+    }
+  },
+  "include": ["src", "electron"]
+}
