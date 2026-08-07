@@ -66,6 +66,9 @@ jobs:
   # 等三个平台都构建完，统一创建一次 Release 并上传所有产物
   release:
     needs: [build-windows, build-macos, build-linux]
+    # macOS 未配置签名时会被 if:false 跳过(skipped)，默认 success() 条件会让本 job 也跳过；
+    # 改为「无失败且未取消」即运行，skipped 的 macos 不影响 Release 生成
+    if: ${{ !failure() && !cancelled() }}
     runs-on: ubuntu-latest
     steps:
       - name: Download all artifacts
