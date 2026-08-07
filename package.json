@@ -52,7 +52,9 @@
       "icon": "build/icon.png",
       "artifactName": "FyqyClaw-${version}-mac-${arch}.${ext}",
       "category": "public.app-category.developer-tools",
-      "hardenedRuntime": true
+      "hardenedRuntime": true,
+      "entitlements": "build/entitlements.mac.plist",
+      "entitlementsInherit": "build/entitlements.mac.inherit.plist"
     },
     "dmg": {
       "title": "FyqyClaw ${version}",
