@@ -1,4 +1,4 @@
-name: Build & Release Windows Installer
+name: Build & Auto Release
 
 on:
   push:
@@ -6,17 +6,11 @@ on:
       - 'v*'
 
 jobs:
-  build:
+  build-windows:
     runs-on: windows-latest
-    # ⚠️ 必须写在job下面，不是写在step里面！
-    permissions:
-      contents: write
-
     steps:
-      - name: Checkout code
+      - name: Checkout source code
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -27,8 +21,7 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Build & Auto Publish
+      - name: Build & Auto Publish Release
         env:
-          # 注入内置token，不需要你自己创建PAT
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: npm run build:win
