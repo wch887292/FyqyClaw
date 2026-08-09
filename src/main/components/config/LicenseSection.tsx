@@ -10,14 +10,14 @@ export function LicenseSection() {
         FyqyClaw 飞扬企源 AI 开发工具开源许可信息
       </p>
 
-      <Card title="MIT 许可证">
+      <Card title="Apache License 2.0">
         <p style={pStyle}>
           Copyright © 2026 晋江市飞虹智科技企业管理有限公司
         </p>
         <p style={pStyle}>
-          特此免费授予任何获得本软件及相关文档文件（以下简称"本软件"）副本的个人或组织，
-          不受限制地处理本软件，包括但不限于使用、复制、修改、合并、发布、分发、再许可
-          和/或出售本软件副本的权利，并允许向其提供本软件的人员这样做，但须符合以下条件：
+          本软件基于 <strong>Apache License 2.0（Apache-2.0）</strong> 开源授权。你可以免费使用、复制、修改、合并、发布、分发本软件，
+          但须遵守 Apache-2.0 的条款，主要包括：随附本许可证副本、对修改文件作出显著标注、
+          保留版权与专利/商标/署名声明等。
         </p>
         <div style={{
           background: 'var(--bg-tertiary)',
@@ -31,14 +31,19 @@ export function LicenseSection() {
           lineHeight: 1.8,
           whiteSpace: 'pre-wrap',
         }}>
-{`上述版权声明和本许可声明应包含在本软件的所有副本或实质性部分中。
+{`Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
 
-本软件按"现状"提供，不提供任何明示或暗示的保证，
-包括但不限于适销性、特定用途适用性和非侵权性的保证。
-在任何情况下，作者或版权持有人均不对因本软件或
-本软件的使用或其他交易而引起的或与之相关的任何
-索赔、损害或其他责任负责，无论是合同诉讼、侵权
-行为还是其他行为。`}
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+完整条款参见仓库根目录的 LICENSE 文件。`}
         </div>
       </Card>
 
@@ -85,7 +90,7 @@ export function LicenseSection() {
         </p>
         <ul style={ulStyle}>
           <li>贡献者保证其贡献是原创作品，或拥有充分的授权提交该贡献；</li>
-          <li>贡献者授予项目维护者永久、不可撤销、全球范围、免版税的非独占许可，以 MIT 许可证条款使用该贡献；</li>
+          <li>贡献者授予项目维护者永久、不可撤销、全球范围、免版税的非独占许可，以 Apache-2.0 许可证条款使用该贡献；</li>
           <li>贡献者理解并同意其贡献将被整合到本软件中，并受本软件整体许可证的约束。</li>
         </ul>
       </Card>
@@ -94,7 +99,7 @@ export function LicenseSection() {
         textAlign: 'center', marginTop: 32, padding: 16,
         fontSize: 12, color: 'var(--text-secondary)', opacity: 0.6,
       }}>
-        © 2026 晋江市飞虹智科技企业管理有限公司 · MIT License
+        © 2026 晋江市飞虹智科技企业管理有限公司 · Apache License 2.0
       </div>
     </div>
   )

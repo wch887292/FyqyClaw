@@ -11,7 +11,7 @@
 <p align="center">
   <a href="https://github.com/fyqy/FyqyClaw/stargazers"><img src="https://img.shields.io/github/stars/fyqy/FyqyClaw?style=flat-square&logo=github" alt="Stars" /></a>
   <a href="https://github.com/fyqy/FyqyClaw/releases"><img src="https://img.shields.io/github/v/release/fyqy/FyqyClaw?style=flat-square&logo=github" alt="Release" /></a>
-  <a href="https://github.com/fyqy/FyqyClaw/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square" alt="License" /></a>
+  <a href="https://github.com/fyqy/FyqyClaw/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-Apache_2.0-blue.svg?style=flat-square" alt="License" /></a>
   <img src="https://img.shields.io/badge/Windows-0078D6?style=flat-square&logo=windows" alt="Windows" />
   <img src="https://img.shields.io/badge/macOS-000000?style=flat-square&logo=apple" alt="macOS" />
   <img src="https://img.shields.io/badge/Linux-FCC624?style=flat-square&logo=linux" alt="Linux" />
@@ -49,7 +49,7 @@
 | **AI 自主性** | SOLO 模式下 AI 可自主规划、编码、测试、审查 | 需要逐条指令交互 |
 | **MCP 协议** | 原生支持，可扩展工具链 | 部分支持或需插件 |
 | **安全体系** | 隐私模式 + 沙箱执行 + API Key 三重加密 | 基础加密 |
-| **开源** | ✅ MIT 开源 | ❌ 闭源商业产品 |
+| **开源** | ✅ Apache-2.0 开源 | ❌ 闭源商业产品 |
 | **本地部署** | ✅ 完全本地运行 | 部分依赖云端 |
 | **费用** | 免费开源（仅需自备 API Key） | 付费订阅 or 有限免费额度 |
 
@@ -316,7 +316,7 @@ FyqyClaw/
 
 ## 📄 许可证
 
-本项目基于 **MIT 许可证** 开源 — 详见 [LICENSE](LICENSE) 文件。
+本项目基于 **Apache License 2.0（Apache-2.0）** 开源 — 详见 [LICENSE](LICENSE) 文件。
 
 版权所有 © 2026 [晋江市飞虹智科技企业管理有限公司](https://klai.top)
 
@@ -339,7 +339,7 @@ FyqyClaw/
 | [FAQ.md](FAQ.md) | 常见问题解答 |
 | [DEPLOYMENT.md](DEPLOYMENT.md) | 部署指南 |
 | [DISCLAIMER.md](DISCLAIMER.md) | 免责声明 |
-| [LICENSE](LICENSE) | MIT 开源许可证 |
+| [LICENSE](LICENSE) | Apache-2.0 开源许可证 |
 
 ---
 

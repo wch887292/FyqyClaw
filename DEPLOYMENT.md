@@ -318,5 +318,5 @@ FyqyClaw 默认开启隐私模式和沙箱执行。所有代码和 AI 对话数�
 ---
 
 <p align="center">
-  © 2026 晋江市飞虹智科技企业管理有限公司 · MIT License
+  © 2026 晋江市飞虹智科技企业管理有限公司 · Apache License 2.0
 </p>
