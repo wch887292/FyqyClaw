@@ -58,11 +58,11 @@ FyqyClaw（飞扬企源AI）是一款深度融合 AI 大模型能力的全流程
 ### Q: 如何安装 FyqyClaw？
 
 **方式一：下载安装包**
-从 [Releases](https://github.com/fyqy/FyqyClaw/releases) 下载对应平台的安装包直接安装。
+从 [Releases](https://github.com/wch887292/FyqyClaw/releases) 下载对应平台的安装包直接安装。
 
 **方式二：从源码构建**
 ```bash
-git clone https://github.com/fyqy/FyqyClaw.git
+git clone https://github.com/wch887292/FyqyClaw.git
 cd FyqyClaw/fyqyclaw-app
 npm install
 npm run dev        # Web 模式
@@ -359,7 +359,7 @@ MCP（Model Context Protocol）是 AI 模型与外部工具之间的通信协议
 
 ### Q: 如何报告 Bug 或提建议？
 
-- **GitHub Issues**: [https://github.com/fyqy/FyqyClaw/issues](https://github.com/fyqy/FyqyClaw/issues)
+- **GitHub Issues**: [https://github.com/wch887292/FyqyClaw/issues](https://github.com/wch887292/FyqyClaw/issues)
 - **技术支持邮箱**: 361336873@qq.com
 
 提交 Issue 时请提供：
@@ -379,7 +379,7 @@ FyqyClaw 使用 **Apache License 2.0（Apache-2.0）** 开源。你可以自由�
 
 ### Q: 如何获取最新版本更新？
 
-1. **GitHub Releases**: 关注 [Releases](https://github.com/fyqy/FyqyClaw/releases) 页面
+1. **GitHub Releases**: 关注 [Releases](https://github.com/wch887292/FyqyClaw/releases) 页面
 2. **Star 仓库**: 点击 GitHub 仓库右上角的 Star 按钮，关注项目动态
 3. **Watch 仓库**: 点击 GitHub 仓库右上角的 Watch 按钮，选择 Releases only
 

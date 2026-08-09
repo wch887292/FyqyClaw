@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Modern%20tech%20logo%20with%20letters%20FC%2C%20digital%20blue%20and%20cyan%20gradient%2C%20hexagonal%20grid%20background%2C%20sleek%20minimalist%20design%2C%20AI%20and%20development%20tool%20vibe%2C%20high%20contrast%20professional%20look&image_size=square_hd" alt="FyqyClaw Logo" width="120" />
+  <img src="docs/logo.svg" alt="FyqyClaw Logo" width="120" />
 </p>
 
 <h1 align="center">FyqyClaw · 飞扬企源 AI</h1>
@@ -9,9 +9,9 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/fyqy/FyqyClaw/stargazers"><img src="https://img.shields.io/github/stars/fyqy/FyqyClaw?style=flat-square&logo=github" alt="Stars" /></a>
-  <a href="https://github.com/fyqy/FyqyClaw/releases"><img src="https://img.shields.io/github/v/release/fyqy/FyqyClaw?style=flat-square&logo=github" alt="Release" /></a>
-  <a href="https://github.com/fyqy/FyqyClaw/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-Apache_2.0-blue.svg?style=flat-square" alt="License" /></a>
+  <a href="https://github.com/wch887292/FyqyClaw/stargazers"><img src="https://img.shields.io/github/stars/fyqy/FyqyClaw?style=flat-square&logo=github" alt="Stars" /></a>
+  <a href="https://github.com/wch887292/FyqyClaw/releases"><img src="https://img.shields.io/github/v/release/fyqy/FyqyClaw?style=flat-square&logo=github" alt="Release" /></a>
+  <a href="https://github.com/wch887292/FyqyClaw/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-Apache_2.0-blue.svg?style=flat-square" alt="License" /></a>
   <img src="https://img.shields.io/badge/Windows-0078D6?style=flat-square&logo=windows" alt="Windows" />
   <img src="https://img.shields.io/badge/macOS-000000?style=flat-square&logo=apple" alt="macOS" />
   <img src="https://img.shields.io/badge/Linux-FCC624?style=flat-square&logo=linux" alt="Linux" />
@@ -127,7 +127,7 @@
 
 #### 方式一：下载安装包
 
-从 [Releases](https://github.com/fyqy/FyqyClaw/releases) 下载对应平台的安装包：
+从 [Releases](https://github.com/wch887292/FyqyClaw/releases) 下载对应平台的安装包：
 
 ```bash
 # Windows
@@ -144,7 +144,7 @@ FyqyClaw-x.x.x.AppImage
 
 ```bash
 # 克隆仓库
-git clone https://github.com/fyqy/FyqyClaw.git
+git clone https://github.com/wch887292/FyqyClaw.git
 cd FyqyClaw/fyqyclaw-app
 
 # 安装依赖

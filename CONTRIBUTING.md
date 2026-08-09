@@ -35,7 +35,7 @@
 
 ### 报告 Bug
 
-提交 Bug 报告前，请先搜索 [Issues](https://github.com/fyqy/FyqyClaw/issues) 确认是否已被报告过。
+提交 Bug 报告前，请先搜索 [Issues](https://github.com/wch887292/FyqyClaw/issues) 确认是否已被报告过。
 
 好的 Bug 报告应包含：
 
@@ -50,7 +50,7 @@
 
 我们欢迎新功能建议！请在提交前：
 
-1. 搜索 [Issues](https://github.com/fyqy/FyqyClaw/issues) 确认是否已有类似建议
+1. 搜索 [Issues](https://github.com/wch887292/FyqyClaw/issues) 确认是否已有类似建议
 2. 清晰地描述功能需求和使用场景
 3. 如果可能，提供实现思路或参考实现
 
@@ -87,7 +87,7 @@ git clone https://github.com/你的用户名/FyqyClaw.git
 cd FyqyClaw/fyqyclaw-app
 
 # 3. 添加上游仓库
-git remote add upstream https://github.com/fyqy/FyqyClaw.git
+git remote add upstream https://github.com/wch887292/FyqyClaw.git
 
 # 4. 安装依赖
 npm install
@@ -307,7 +307,7 @@ npm run build:win
 
 ### 提交 Issue
 
-- [GitHub Issues](https://github.com/fyqy/FyqyClaw/issues)
+- [GitHub Issues](https://github.com/wch887292/FyqyClaw/issues)
 - 技术支持邮箱：361336873@qq.com
 
 ### 其他联系方式

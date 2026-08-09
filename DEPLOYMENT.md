@@ -52,7 +52,7 @@
 ### 1. 克隆仓库
 
 ```bash
-git clone https://github.com/fyqy/FyqyClaw.git
+git clone https://github.com/wch887292/FyqyClaw.git
 cd FyqyClaw/fyqyclaw-app
 ```
 
@@ -310,10 +310,10 @@ FyqyClaw 默认开启隐私模式和沙箱执行。所有代码和 AI 对话数�
 
 ## 相关资源
 
-- [项目主页](https://github.com/fyqy/FyqyClaw)
-- [问题反馈](https://github.com/fyqy/FyqyClaw/issues)
-- [发布日志](https://github.com/fyqy/FyqyClaw/releases)
-- [开发文档](https://github.com/fyqy/FyqyClaw/wiki)
+- [项目主页](https://github.com/wch887292/FyqyClaw)
+- [问题反馈](https://github.com/wch887292/FyqyClaw/issues)
+- [发布日志](https://github.com/wch887292/FyqyClaw/releases)
+- [开发文档](https://github.com/wch887292/FyqyClaw/wiki)
 
 ---
 
