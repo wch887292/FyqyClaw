@@ -31,7 +31,18 @@
   <a href="#-许可证">许可证</a>
 </p>
 
+
 ---
+
+## 🌐 品牌与官网
+
+本仓库由 **晋江市飞虹智科技企业管理有限公司 · 飞扬企源研发中心** 维护，是飞虹智 klAI 开源生态的一部分。
+
+- 🏠 **官方网站**：[https://www.klai.top](https://www.klai.top) — 飞虹智 klAI · 泉州制造业 AI 服务商
+- 📦 **开源矩阵**：[https://www.klai.top/opensource.html](https://www.klai.top/opensource.html)
+- 🤖 **AI 编程智能体**：[https://github.com/wch887292/feihong-code](https://github.com/wch887292/feihong-code) — 飞虹 Code
+
+
 
 ## 📖 项目简介
 
