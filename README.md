@@ -19,6 +19,8 @@
   <img src="https://img.shields.io/badge/React-18.x-61DAFB?style=flat-square&logo=react" alt="React" />
   <img src="https://img.shields.io/badge/TypeScript-5.x-3178C6?style=flat-square&logo=typescript" alt="TypeScript" />
   <img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square" alt="PRs Welcome" />
+
+> 📦 **已同步镜像至 GitCode**：[gcw_YuRlTP0G/FyqyClaw](https://gitcode.com/gcw_YuRlTP0G/FyqyClaw) —— 欢迎前往 Star 与关注，一起提升开源曝光度！
 </p>
 
 <p align="center">
