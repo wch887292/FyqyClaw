@@ -1,3 +1,5 @@
+> **English / 英文文档**：[README_EN.md](README_EN.md) · [FAQ (English)](FAQ_EN.md)
+
 <p align="center">
   <img src="docs/logo.svg" alt="FyqyClaw Logo" width="120" />
 </p>
