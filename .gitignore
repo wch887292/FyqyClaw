@@ -35,6 +35,9 @@ Thumbs.db
 *.AppImage
 release/
 
+# Build backups (leftover from local builds, never tracked)
+*.bak/
+
 # Experimental / leftover config & test files (kept locally, not tracked)
 test-command-palette.html
 vite.browser.config.ts

@@ -9,8 +9,8 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/wch887292/FyqyClaw/stargazers"><img src="https://img.shields.io/github/stars/fyqy/FyqyClaw?style=flat-square&logo=github" alt="Stars" /></a>
-  <a href="https://github.com/wch887292/FyqyClaw/releases"><img src="https://img.shields.io/github/v/release/fyqy/FyqyClaw?style=flat-square&logo=github" alt="Release" /></a>
+  <a href="https://github.com/wch887292/FyqyClaw/stargazers"><img src="https://img.shields.io/github/stars/wch887292/FyqyClaw?style=flat-square&logo=github" alt="Stars" /></a>
+  <a href="https://github.com/wch887292/FyqyClaw/releases"><img src="https://img.shields.io/github/v/release/wch887292/FyqyClaw?style=flat-square&logo=github" alt="Release" /></a>
   <a href="https://github.com/wch887292/FyqyClaw/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-Apache_2.0-blue.svg?style=flat-square" alt="License" /></a>
   <img src="https://img.shields.io/badge/Windows-0078D6?style=flat-square&logo=windows" alt="Windows" />
   <img src="https://img.shields.io/badge/macOS-000000?style=flat-square&logo=apple" alt="macOS" />
@@ -30,6 +30,10 @@
   <a href="#-版本规划">版本规划</a> ·
   <a href="#-许可证">许可证</a>
 </p>
+
+> 💡 **这是一款桌面 GUI 应用（Electron）**。推荐直接下载安装包使用；`npm` 上发布的是**源码包**，供开发者阅读 / 二次构建，并非可双击运行的程序。运行方式见下方「快速开始」。
+
+---
 
 
 ---
@@ -152,6 +156,12 @@ FyqyClaw-x.x.x.AppImage
 ```
 
 #### 方式二：从源码构建
+
+> 📦 也可通过 npm 获取**源码包**（仅供阅读 / 二次构建，不含可运行程序）：
+> ```bash
+> npm install fyqyclaw
+> cd node_modules/fyqyclaw   # 进入源码目录后按下方步骤构建
+> ```
 
 ```bash
 # 克隆仓库
