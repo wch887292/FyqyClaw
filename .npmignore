@@ -1,0 +1,13 @@
+# 发布白名单见 package.json 的 files 字段；此处仅作兜底排除
+node_modules
+dist
+dist-electron
+release
+*.bak
+*.log
+debug.log
+.github
+test-command-palette.html
+vite.browser.config.ts
+vite.config.web.ts
+vite.web-test.config.ts

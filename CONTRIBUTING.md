@@ -221,6 +221,17 @@ feat(model-adapter): 添加 DeepSeek 模型适配器
 
 ## Pull Request 流程
 
+### 分支保护规则
+
+`main`（默认分支）与 `master` 均已开启**严格分支保护**，所有合并必须通过 Pull Request：
+
+- 🚫 禁止 `git push --force` 到受保护分支
+- 🚫 禁止删除受保护分支（管理员同样受限）
+- ✅ 所有变更必须经 PR 合并，且**至少 1 个审批**才能合入
+- ✅ 即使你是仓库管理员，也不能直接 push 到 `main` / `master`
+
+> 因此请勿直接 push 到 `main` / `master`，请基于特性分支发起 PR。
+
 ### 基本流程
 
 1. **同步上游仓库**
