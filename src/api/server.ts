@@ -7,6 +7,16 @@ import { SandboxManager } from '@sandbox/manager'
 import { MCPServerManager } from '@mcp/manager'
 import { SkillsManager } from '@skills/manager'
 
+/**
+ * ApiServer —— HTTP 接口编排层（实验性 / 当前未对外暴露）。
+ *
+ * 说明：本类定义了聊天、代码生成、审查、Agent 执行等路由，但**目前没有 listen()
+ * 实现，也不会被任何入口实例化**。即 1.x 版本暂未提供对外 REST API 服务，
+ * 请勿在生产环境依赖此模块。后续版本若启用，需先补齐：
+ *   1) 基于 http/server 的真实监听与优雅关闭；
+ *   2) 鉴权（authKey）强制校验与速率限制；
+ *   3) 端口绑定的安全评估（仅本地回环 127.0.0.1）。
+ */
 export class ApiServer {
   private config: ApiConfig
   private routes: Map<string, ApiRoute> = new Map()

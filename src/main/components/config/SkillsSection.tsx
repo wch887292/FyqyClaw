@@ -1,5 +1,9 @@
 import React, { useState } from 'react'
 import { allSkills, type SkillEntry } from '../../mock-data'
+import { SkillsManager } from '@skills/manager'
+
+// 真实技能管理器实例：安装/卸载会同步到管理器（供引擎/执行器感知启用状态）
+const skillsManager = new SkillsManager()
 
 export function SkillsSection() {
   const [skills, setSkills] = useState<SkillEntry[]>(allSkills)
@@ -10,12 +14,17 @@ export function SkillsSection() {
     : skills.filter(s => s.status === filter)
 
   const installSkill = (id: string) => {
+    // 同步到真实管理器：标记为启用并尝试从市场安装
+    skillsManager.setEnabled(id, true)
+    void skillsManager.installFromMarketplace(id)
     setSkills(prev => prev.map(s =>
       s.id === id ? { ...s, status: 'installed' as const } : s
     ))
   }
 
   const uninstallSkill = (id: string) => {
+    // 同步到真实管理器：标记为禁用
+    skillsManager.setEnabled(id, false)
     setSkills(prev => prev.map(s =>
       s.id === id ? { ...s, status: 'available' as const } : s
     ))

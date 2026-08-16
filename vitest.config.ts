@@ -18,6 +18,7 @@ export default defineConfig({
       '@cue': path.resolve(__dirname, 'src/cue-engine'),
       '@api': path.resolve(__dirname, 'src/api'),
       '@plugin': path.resolve(__dirname, 'src/plugin-system'),
+      '@plugin-system': path.resolve(__dirname, 'src/plugin-system'),
       '@mcp': path.resolve(__dirname, 'src/mcp'),
       '@skills': path.resolve(__dirname, 'src/skills'),
     },

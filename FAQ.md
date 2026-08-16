@@ -42,9 +42,9 @@ FyqyClaw（飞扬企源AI）是一款深度融合 AI 大模型能力的全流程
 
 | 平台 | 支持情况 |
 |------|---------|
-| Windows 10+ | ✅ 完全支持 |
-| macOS 12+ | ✅ 完全支持 |
-| Linux (Ubuntu 20.04+) | ✅ 完全支持 |
+| Windows 10+ | ✅ 完全支持（CI 自动发布 NSIS 安装包） |
+| macOS 12+ | ⚠️ 仅本地未签名构建可用（需 macOS 环境：`npm run build:mac`），CI 官方签名包待配置 Apple 开发者证书 |
+| Linux (Ubuntu 20.04+) | ✅ 完全支持（CI 自动发布 AppImage + deb） |
 | WSL 2 | ✅ 支持 |
 
 ### Q: 项目名称"FyqyClaw"有什么含义？

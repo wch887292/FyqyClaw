@@ -1,12 +1,41 @@
 import React, { useState, useEffect } from 'react'
 import { useAppStore } from '../../stores/app-store'
 import { mockModels, type ModelEntry } from '../../mock-data'
+import { modelManager } from '../solo-engine'
 
 const LOG_PREFIX = '[Config-Models]'
+const MODELS_STORAGE_KEY = 'fyqyclaw.customModels'
 const toast = (msg: string) => useAppStore.getState().setToast(msg)
 
+/** 从 localStorage 读取用户自定义模型并重新注册到引擎 */
+function loadPersistedModels(): ModelEntry[] {
+  try {
+    const raw = localStorage.getItem(MODELS_STORAGE_KEY)
+    if (!raw) return []
+    const list = JSON.parse(raw) as ModelEntry[]
+    for (const m of list) {
+      modelManager.configureCustomModel({
+        provider: m.provider === 'Custom' ? 'custom' : m.provider.toLowerCase(),
+        modelName: m.modelId,
+        endpoint: m.endpoint,
+      })
+    }
+    return list
+  } catch {
+    return []
+  }
+}
+
+function persistModels(list: ModelEntry[]): void {
+  try {
+    localStorage.setItem(MODELS_STORAGE_KEY, JSON.stringify(list.filter(m => m.id.startsWith('custom-'))))
+  } catch {
+    /* 忽略持久化失败 */
+  }
+}
+
 export function ModelsSection() {
-  const [models, setModels] = useState<ModelEntry[]>(mockModels)
+  const [models, setModels] = useState<ModelEntry[]>(() => [...mockModels, ...loadPersistedModels()])
   const [showAddForm, setShowAddForm] = useState(false)
   const [newModel, setNewModel] = useState({
     name: '', provider: 'OpenAI', modelId: '', endpoint: '', apiKey: '',
@@ -88,7 +117,19 @@ export function ModelsSection() {
     console.log('添加模型:', entry)
     console.log('API Key:', newModel.apiKey ? '已设置 (已隐藏)' : '未设置')
     console.groupEnd()
-    setModels(prev => [...prev, entry])
+
+    // 真正注册到模型适配器管理器，并设为默认模型（引擎/ApiServer 即可用）
+    modelManager.configureCustomModel({
+      provider: newModel.provider === 'Custom' ? 'custom' : newModel.provider.toLowerCase(),
+      modelName: entry.modelId,
+      endpoint: entry.endpoint,
+      apiKey: newModel.apiKey || undefined,
+    })
+    modelManager.setDefaultModel(entry.modelId)
+
+    const next = [...models, entry]
+    setModels(next)
+    persistModels(next)
     setNewModel({ name: '', provider: 'OpenAI', modelId: '', endpoint: '', apiKey: '' })
     setShowAddForm(false)
     toast(`已添加模型: ${entry.name}`)
@@ -106,9 +147,11 @@ export function ModelsSection() {
     console.log('时间戳:', Date.now())
     console.groupEnd()
 
-    setModels(prev => prev.map(m =>
-      m.id === id ? { ...m, enabled: !m.enabled } : m
-    ))
+    setModels(prev => {
+      const next = prev.map(m => (m.id === id ? { ...m, enabled: !m.enabled } : m))
+      persistModels(next)
+      return next
+    })
   }
 
   const handleEditClick = (model: ModelEntry) => {
@@ -167,7 +210,9 @@ export function ModelsSection() {
     console.log('模型名称:', target?.name)
     console.groupEnd()
 
-    setModels(prev => prev.filter(m => m.id !== deleteConfirmId))
+    const next = models.filter(m => m.id !== deleteConfirmId)
+    setModels(next)
+    persistModels(next)
     setDeleteConfirmId(null)
     toast(`已删除模型: ${target?.name || '未知'}`)
   }

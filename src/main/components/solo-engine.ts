@@ -2,9 +2,13 @@ import { AgentEngine } from '@orchestrator/agent/engine'
 import { ModelAdapterManager } from '../../model-adapter/manager'
 import type { ModelConfig } from '../../model-adapter/types'
 import { decryptApiKey } from '../utils/crypto'
+import { useAppStore } from '../stores/app-store'
 
 export const modelManager = new ModelAdapterManager()
 export const agentEngine = new AgentEngine(modelManager)
+
+// SOLO 生成的代码写入用户当前打开的项目目录（资源管理器里打开的文件夹）
+agentEngine.setWorkspaceResolver(() => useAppStore.getState().rootPath || undefined)
 
 export function configureAgentEngine(activeModel: {
   provider?: string

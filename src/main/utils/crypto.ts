@@ -55,32 +55,64 @@ export function resetSessionSalt(): void {
 }
 
 /**
- * 获取浏览器指纹（加密密钥的组成部分）
- * 组合多个不易变的环境特征，确保密文与设备绑定
+ * 稳定的设备标识（加密密钥的设备绑定组成部分）
+ * 持久化到 localStorage，跨重启稳定；不依赖易变的屏幕参数，避免窗口缩放导致旧密文无法解密。
+ */
+let deviceId = ''
+const DEVICE_ID_KEY = 'fyqy_crypto_device_id'
+
+function getDeviceId(): string {
+  if (deviceId) return deviceId
+  try {
+    if (typeof localStorage !== 'undefined') {
+      const stored = localStorage.getItem(DEVICE_ID_KEY)
+      if (stored) {
+        deviceId = stored
+        return deviceId
+      }
+      const bytes = new Uint8Array(16)
+      crypto.getRandomValues(bytes)
+      deviceId = Array.from(bytes).map(b => b.toString(16).padStart(2, '0')).join('')
+      localStorage.setItem(DEVICE_ID_KEY, deviceId)
+      return deviceId
+    }
+  } catch {
+    // 忽略隐私模式 / 存储不可用
+  }
+  const bytes = new Uint8Array(16)
+  crypto.getRandomValues(bytes)
+  deviceId = Array.from(bytes).map(b => b.toString(16).padStart(2, '0')).join('')
+  return deviceId
+}
+
+/**
+ * 获取设备指纹（加密密钥的组成部分）
+ * 仅组合稳定的环境特征（UA + 语言 + 设备ID），确保密文与设备绑定，
+ * 且不会因窗口缩放 / 屏幕参数变化导致已保存密文无法解密。
  */
 function getFingerprint(): string {
   if (typeof window === 'undefined') return 'server-side'
   const parts: string[] = [
     window.navigator.userAgent || '',
-    String(window.screen.width || ''),
-    String(window.screen.height || ''),
-    String(window.screen.colorDepth || ''),
     window.navigator.language || '',
+    getDeviceId(),
   ]
   return parts.join('|')
 }
 
 /**
- * 从指纹派生固定长度的密钥
+ * 从会话盐值 + 设备指纹派生固定长度的密钥
+ * 密钥同时绑定「持久化会话盐值」与「设备指纹」，密文与设备绑定，且跨重启可稳定解密。
  */
-function deriveKey(salt: string): number[] {
+function deriveKey(salt: string, fingerprint: string): number[] {
+  const combined = `${salt}|${fingerprint}`
   let hash = 0
-  for (let i = 0; i < salt.length; i++) {
-    const char = salt.charCodeAt(i)
+  for (let i = 0; i < combined.length; i++) {
+    const char = combined.charCodeAt(i)
     hash = ((hash << 5) - hash) + char
     hash = hash & hash // Convert to 32-bit integer
   }
-  // 生成 32 字节密钥数组（仅依赖稳定盐值，跨重启 / 改变屏幕参数也可解密）
+  // 生成 32 字节密钥数组（依赖稳定盐值 + 设备指纹，跨重启 / 改变屏幕参数也可解密）
   const key: number[] = []
   let seed = Math.abs(hash) || 1
   for (let i = 0; i < 32; i++) {
@@ -180,13 +212,11 @@ function customBase64Decode(encoded: string): number[] {
 export function encryptApiKey(plaintext: string): string {
   if (!plaintext) return ''
   const salt = getSessionSalt()
-  const key = deriveKey(salt)
+  const fp = getFingerprint()
+  const key = deriveKey(salt, fp)
 
-  // 将明文转为字节数组
-  const bytes: number[] = []
-  for (let i = 0; i < plaintext.length; i++) {
-    bytes.push(plaintext.charCodeAt(i))
-  }
+  // 明文经 UTF-8 编码为字节数组（每个字节 0-255，兼容中文 / emoji 等非 ASCII）
+  const bytes = Array.from(new TextEncoder().encode(plaintext))
 
   // 三层加密
   const layer1 = layer1Encrypt(bytes, key)
@@ -205,17 +235,18 @@ export function decryptApiKey(encrypted: string): string {
   if (!encrypted) return ''
   try {
     const salt = getSessionSalt()
-    const key = deriveKey(salt)
+    const fp = getFingerprint()
+    const key = deriveKey(salt, fp)
 
     // 三层解密（逆向顺序）
     const layer2 = customBase64Decode(encrypted)
     const layer1 = layer2Decrypt(layer2)
     const bytes = layer1Decrypt(layer1, key)
 
-    // 字节数组转回字符串
-    return String.fromCharCode(...bytes)
+    // 字节数组经 UTF-8 解码回字符串（兼容非 ASCII）
+    return new TextDecoder().decode(new Uint8Array(bytes))
   } catch {
-    // 解密失败（可能是跨环境读取），返回空字符串
+    // 解密失败（可能是跨环境读取 / 密钥损坏），返回空字符串
     return ''
   }
 }
