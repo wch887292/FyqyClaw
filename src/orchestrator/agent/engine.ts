@@ -5,6 +5,7 @@ import { ContextManager } from '../context/context-manager'
 import { CodeReviewEngine } from '../review/code-review'
 import { ModelAdapterManager } from '../../model-adapter/manager'
 import type { ModelConfig } from '../../model-adapter/types'
+import { writeFile, getCwd } from '../../main/utils/electron-bridge'
 
 interface ParsedCodeBlock {
   language: string
@@ -45,6 +46,10 @@ export class AgentEngine {
     generatedAt: 0,
   }
   private generatedFiles: FileChange[] = []
+  private workspaceRoot: string | undefined
+  private workspaceResolver: () => string | undefined = () => undefined
+  private fileWriter: (absPath: string, content: string) => Promise<boolean> = (p, c) => writeFile(p, c)
+  private writtenPaths: Set<string> = new Set()
 
   constructor(modelManager?: ModelAdapterManager) {
     this.modelManager = modelManager || new ModelAdapterManager()
@@ -123,7 +128,7 @@ export class AgentEngine {
 
   private registerDefaultCapabilities(): void {
     this.registerCapability({
-      name: 'generate-code',
+      name: 'generate',
       description: '根据需求生成代码文件',
       retryable: true,
       timeout: 60000,
@@ -167,7 +172,7 @@ export class AgentEngine {
             `[SOLO] [Capability] 📦 解析到 ${codeBlocks.length} 个代码块`,
             ...codeBlocks.map(b => `\n    - ${b.language}${b.filePath ? `: ${b.filePath}` : ''} (${b.code.split('\n').length} 行)`)
           )
-          this.applyCodeBlocks(codeBlocks, 'generate')
+          await this.applyCodeBlocks(codeBlocks, 'generate')
         } else {
           console.log(`[SOLO] [Capability] ⚠️ 未从 AI 输出中解析到代码块，原始输出将作为文本返回`)
         }
@@ -177,7 +182,43 @@ export class AgentEngine {
     })
 
     this.registerCapability({
-      name: 'analyze-code',
+      name: 'modify',
+      description: '修改现有代码文件',
+      retryable: true,
+      timeout: 60000,
+      execute: async (params) => {
+        const { description, language } = params as { description: string; language: string }
+        console.log(
+          `[SOLO] [Capability] ✏️ 开始修改代码`,
+          `\n  需求: ${description.substring(0, 120)}${description.length > 120 ? '...' : ''}`
+        )
+        const messages: ChatMessage[] = [
+          {
+            role: 'system',
+            content: `你是一个资深全栈工程师，擅长在现有代码基础上进行精准修改。
+
+请根据用户需求修改代码。要求：
+1. 保持原有代码风格与架构
+2. 只输出需要修改或新增的代码
+3. 使用 markdown 代码块输出，并在代码块开始标注目标文件名
+   - 格式: \`\`\`typescript:src/example.ts 或 \`\`\`typescript src/example.ts`,
+          },
+          {
+            role: 'user',
+            content: `请修改 ${language || '代码'} 实现以下需求：\n\n${description}`,
+          },
+        ]
+        const result = await this.callAI(messages)
+        const codeBlocks = this.parseCodeBlocks(result)
+        if (codeBlocks.length > 0) {
+          await this.applyCodeBlocks(codeBlocks, 'modify')
+        }
+        return result
+      },
+    })
+
+    this.registerCapability({
+      name: 'analyze',
       description: '分析代码结构和逻辑',
       retryable: true,
       timeout: 60000,
@@ -221,7 +262,7 @@ export class AgentEngine {
     })
 
     this.registerCapability({
-      name: 'run-tests',
+      name: 'test',
       description: '运行自动化测试',
       retryable: true,
       timeout: 60000,
@@ -297,7 +338,7 @@ export class AgentEngine {
             `[SOLO] [Capability] 📦 修复解析到 ${codeBlocks.length} 个代码块`,
             ...codeBlocks.map(b => `\n    - ${b.language}${b.filePath ? `: ${b.filePath}` : ''}`)
           )
-          this.applyCodeBlocks(codeBlocks, 'fix')
+          await this.applyCodeBlocks(codeBlocks, 'fix')
         }
 
         return result
@@ -307,6 +348,32 @@ export class AgentEngine {
 
   registerCapability(capability: AgentCapability): void {
     this.capabilities.set(capability.name, capability)
+  }
+
+  /** 设置 SOLO 写盘的工作区根目录（用户已打开的项目目录） */
+  setWorkspaceRoot(root: string | undefined): void {
+    this.workspaceRoot = root || undefined
+  }
+
+  /** 注入工作区根目录解析器（运行时从应用状态读取，避免直接耦合 UI store） */
+  setWorkspaceResolver(resolver: () => string | undefined): void {
+    this.workspaceResolver = resolver
+  }
+
+  /** 注入落盘实现，便于测试与不同运行环境替换 */
+  setFileWriter(writer: (absPath: string, content: string) => Promise<boolean>): void {
+    this.fileWriter = writer
+  }
+
+  /** 相对路径解析为绝对路径：绝对路径原样使用；相对路径基于工作区根目录，无根目录时回退到进程 cwd */
+  private resolvePath(filePath: string): string {
+    if (filePath.startsWith('/') || /^[A-Za-z]:[\\/]/.test(filePath)) {
+      return filePath
+    }
+    const base = this.workspaceRoot || getCwd()
+    if (!base || base === '/') return filePath.startsWith('/') ? filePath : '/' + filePath
+    const sep = base.endsWith('/') || base.endsWith('\\') ? '' : '/'
+    return base + sep + filePath
   }
 
   setOnProgress(callback: (task: AgentTask) => void): void {
@@ -321,6 +388,9 @@ export class AgentEngine {
     this.status = 'planning'
     this.errorHistory = []
     this.generatedFiles = []
+    this.writtenPaths.clear()
+    // 从运行时解析器刷新工作区根目录（用户已打开的项目目录），保证生成代码落盘到正确位置
+    this.workspaceRoot = this.workspaceResolver() || this.workspaceRoot
     const taskId = `task-${Date.now()}`
 
     console.log(
@@ -520,10 +590,17 @@ export class AgentEngine {
     this.notifyProgress()
 
     const reviewStartTime = Date.now()
+    // 审查真实落盘/生成的代码，而非任务描述（可信化：杜绝"审的是描述"的假审查）
+    const hasCode = this.generatedFiles.length > 0
+    const codeDiff = hasCode
+      ? this.generatedFiles
+          .map(f => `=== ${f.filePath} ===\n` + f.content.split('\n').map(l => `+ ${l}`).join('\n'))
+          .join('\n')
+      : description
     const reviewResults = await this.codeReview.review({
-      diff: description,
-      language: 'unknown',
-      filePath: 'agent-task',
+      diff: codeDiff,
+      language: hasCode ? this.generatedFiles[0].language : 'unknown',
+      filePath: hasCode ? this.generatedFiles[0].filePath : 'agent-task',
     })
     console.log(
       `[SOLO] ✅ 代码审查完成`,
@@ -553,22 +630,13 @@ export class AgentEngine {
     return this.currentTask!
   }
 
-  private trackChange(step: ExecutionStep): void {
-    // Track changes made during execution
-    if (step.action === 'generate' || step.action === 'modify' || step.action === 'fix') {
-      const fileCount = this.changeSummary.filesChanged.length + 1
-      this.changeSummary.filesChanged.push(`file-${fileCount}`)
-      this.changeSummary.changes.push({
-        file: `file-${fileCount}`,
-        type: step.action === 'generate' ? 'created' : 'modified',
-        summary: step.description,
-        linesAdded: 10,
-        linesRemoved: step.action === 'modify' ? 5 : 0,
-      })
-      this.changeSummary.statistics.totalFiles++
-      this.changeSummary.statistics.totalLinesAdded += 10
-      this.changeSummary.statistics.totalLinesRemoved += step.action === 'modify' ? 5 : 0
-    }
+  private trackChange(_step: ExecutionStep): void {
+    // 基于真实落盘/生成的文件重新汇总，杜绝伪造的 file-N 占位与硬编码行数
+    const stats = this.changeSummary.statistics
+    stats.totalFiles = this.generatedFiles.length
+    stats.totalLinesAdded = this.generatedFiles.reduce((sum, f) => sum + f.content.split('\n').length, 0)
+    stats.totalLinesRemoved = 0
+    stats.languages = [...new Set(this.generatedFiles.map(f => f.language))]
   }
 
   private generateSummaryText(): string {
@@ -714,44 +782,55 @@ export class AgentEngine {
   }
 
   /**
-   * Apply generated code blocks as file changes
+   * 将解析出的代码块落地为真实文件变更（写盘）
+   * 相对路径基于工作区根目录解析为绝对路径，经 IPC 真正写入用户项目目录。
    */
-  private applyCodeBlocks(blocks: ParsedCodeBlock[], stepId: string): void {
+  async applyCodeBlocks(blocks: ParsedCodeBlock[], _stepId: string): Promise<void> {
     for (const block of blocks) {
       if (!block.code.trim()) continue
 
       // Determine file path
-      let filePath = block.filePath
-      if (!filePath) {
+      let relPath = block.filePath
+      if (!relPath) {
         // Generate a path from language and content hash
         const ext = this.languageToExtension(block.language)
         const hash = Math.abs(block.code.length).toString(16).substring(0, 6)
-        filePath = `generated/${block.language}-${hash}${ext}`
+        relPath = `generated/${block.language}-${hash}${ext}`
       }
 
-      const isExisting = this.generatedFiles.some(f => f.filePath === filePath)
+      const absPath = this.resolvePath(relPath)
+      const isExisting = this.generatedFiles.some(f => f.filePath === absPath)
       const change: FileChange = {
-        filePath,
+        filePath: absPath,
         language: block.language,
         content: block.code,
         action: isExisting ? 'modified' : 'created',
       }
 
       // Update or add to generated files
-      const existingIdx = this.generatedFiles.findIndex(f => f.filePath === filePath)
+      const existingIdx = this.generatedFiles.findIndex(f => f.filePath === absPath)
       if (existingIdx >= 0) {
         this.generatedFiles[existingIdx] = change
       } else {
         this.generatedFiles.push(change)
       }
 
-      // Track in change summary
+      // 真实落盘（通过 IPC 写入用户项目目录）
       const linesAdded = block.code.split('\n').length
-      const existingChange = this.changeSummary.changes.find(c => c.file === filePath)
+      let written = false
+      try {
+        written = await this.fileWriter(absPath, block.code)
+      } catch (err: any) {
+        console.error(`[SOLO] ❌ 文件写盘失败: ${absPath}`, err?.message || err)
+      }
+      if (written) this.writtenPaths.add(absPath)
+
+      // 记录变更汇总（使用真实相对路径，无论落盘成功与否都保留生成内容）
+      const existingChange = this.changeSummary.changes.find(c => c.file === relPath)
       if (!existingChange) {
-        this.changeSummary.filesChanged.push(filePath)
+        this.changeSummary.filesChanged.push(relPath)
         this.changeSummary.changes.push({
-          file: filePath,
+          file: relPath,
           type: change.action,
           summary: `Generated ${block.language} code (${linesAdded} lines)`,
           linesAdded,
@@ -759,16 +838,16 @@ export class AgentEngine {
         })
         this.changeSummary.statistics.totalFiles++
         this.changeSummary.statistics.totalLinesAdded += linesAdded
-        // Track language
         if (!this.changeSummary.statistics.languages.includes(block.language)) {
           this.changeSummary.statistics.languages.push(block.language)
         }
       }
 
       console.log(
-        `[SOLO]   📄 代码变更: ${change.action === 'created' ? '创建' : '修改'} ${filePath}`,
+        `[SOLO]   📄 代码变更: ${change.action === 'created' ? '创建' : '修改'} ${relPath}${written ? ' (已写盘)' : ' (写盘失败/内存态)'}`,
         `\n    语言: ${block.language}`,
-        `\n    行数: ${linesAdded}`
+        `\n    行数: ${linesAdded}`,
+        `\n    路径: ${absPath}`
       )
     }
   }

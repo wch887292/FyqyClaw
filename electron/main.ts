@@ -2,6 +2,7 @@ import { app, BrowserWindow, ipcMain, dialog } from 'electron'
 import path from 'path'
 import fs from 'fs'
 import { spawn } from 'child_process'
+import { evaluateSandboxPolicy } from '../src/sandbox/policy/evaluate'
 
 // ──────────────────────────────────────────────────────────────
 // 修复 Windows 安装后主窗口内容区「纯黑」的问题
@@ -123,6 +124,8 @@ ipcMain.handle('fs:read-file', async (_event, filePath: string) => {
 
 ipcMain.handle('fs:write-file', async (_event, filePath: string, content: string) => {
   try {
+    // 确保父目录存在（SOLO 生成代码可能写入尚未创建的子目录）
+    await fs.promises.mkdir(path.dirname(filePath), { recursive: true })
     await fs.promises.writeFile(filePath, content, 'utf-8')
     return true
   } catch (error) {
@@ -180,19 +183,31 @@ ipcMain.handle('dialog:open-file', async () => {
   return result.filePaths[0]
 })
 
-// Sandbox - Real command execution via child_process
+// Sandbox - Real command execution via child_process, with security policy enforced at the main-process boundary
 ipcMain.handle('sandbox:execute', async (_event, request: { id: string; command: string; cwd: string; timeout: number }) => {
   return new Promise((resolve) => {
     const startTime = Date.now()
+
+    // 安全策略检查（主进程边界强制，防止渲染层绕过）
+    const policy = evaluateSandboxPolicy(request.command, request.cwd || process.cwd())
+    if (!policy.allowed) {
+      const reason = policy.reason || '命令被安全策略阻止'
+      console.warn('[sandbox] 已拦截命令:', request.command, '-', reason)
+      logRendererError('sandbox:blocked', request.command, reason)
+      return resolve({
+        id: request.id,
+        exitCode: -1,
+        stdout: '',
+        stderr: reason,
+        duration: Date.now() - startTime,
+        wasBlocked: true,
+        blockReason: reason,
+      })
+    }
+
     let stdout = ''
     let stderr = ''
 
-    // Parse command and args
-    const parts = request.command.trim().split(/\s+/)
-    const cmd = parts[0]
-    const args = parts.slice(1)
-
-    // Determine shell based on platform
     const isWindows = process.platform === 'win32'
     const shell = isWindows ? 'cmd.exe' : '/bin/bash'
     const shellArgs = isWindows ? ['/c', request.command] : ['-c', request.command]

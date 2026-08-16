@@ -1,11 +1,16 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { mockServers, type MCPServer } from '../../mock-data'
+import { MCPServerManager } from '@mcp/manager'
 
 const LOG_PREFIX = '[Config-MCP]'
+
+// 真实管理器实例：注册/删除会同步到内存中的 MCP 管理器（供引擎/ApiServer 使用）
+const mcpManager = new MCPServerManager()
 
 export function MCPServersSection() {
   const [servers, setServers] = useState<MCPServer[]>(mockServers)
   const [showAddForm, setShowAddForm] = useState(false)
+  const [form, setForm] = useState({ name: '', transport: 'http' as 'http' | 'stdio' | 'ws', endpoint: '', description: '' })
   const prevServersRef = useRef(servers)
 
   // 组件挂载时打印初始服务器列表
@@ -63,17 +68,45 @@ export function MCPServersSection() {
     console.log('时间戳:', Date.now())
     console.groupEnd()
 
+    // 同步到真实 MCP 管理器
+    mcpManager.unregisterServer(id)
     setServers(prev => prev.filter(s => s.id !== id))
   }
 
   const handleRegister = () => {
+    if (!form.name.trim() || !form.endpoint.trim()) {
+      console.warn(`${LOG_PREFIX} 注册失败: 名称与端点为必填`)
+      return
+    }
+    const id = `mcp-${Date.now()}`
+    const config = {
+      id,
+      name: form.name.trim(),
+      transport: form.transport,
+      endpoint: form.transport === 'http' || form.transport === 'ws' ? form.endpoint.trim() : undefined,
+      command: form.transport === 'stdio' ? form.endpoint.trim() : undefined,
+      args: form.transport === 'stdio' ? [] : undefined,
+      enabled: true,
+      permissions: { allowNetwork: true, allowFileAccess: false, allowCommandExecution: false, riskLevel: 'medium' as const },
+    }
+    // 同步到真实 MCP 管理器
+    mcpManager.registerServer(config)
+    const entry: MCPServer = {
+      id,
+      name: config.name,
+      transport: config.transport,
+      endpoint: config.endpoint || config.command || '',
+      description: form.description.trim(),
+      status: 'disconnected',
+      toolsCount: 0,
+    }
     console.group(`${LOG_PREFIX} 注册 MCP 服务器`)
     console.log('操作: 注册新服务器')
-    console.log('时间戳:', Date.now())
-    // 模拟注册逻辑 - 从表单获取数据
-    console.warn('表单数据尚未绑定到 state，当前为模拟注册')
-    console.log('建议: 检查表单输入值是否正确绑定')
+    console.log('配置:', config)
+    console.log('当前已注册服务器数:', mcpManager.getServers().length)
     console.groupEnd()
+    setServers(prev => [...prev, entry])
+    setForm({ name: '', transport: 'http', endpoint: '', description: '' })
     setShowAddForm(false)
   }
 
@@ -123,11 +156,17 @@ export function MCPServersSection() {
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 16 }}>
             <div>
               <label style={{ display: 'block', fontSize: 12, color: 'var(--text-secondary)', marginBottom: 4 }}>名称</label>
-              <input placeholder="MCP 服务器名称" style={inputStyle} />
+              <input
+                value={form.name}
+                onChange={e => setForm(p => ({ ...p, name: e.target.value }))}
+                placeholder="MCP 服务器名称" style={inputStyle} />
             </div>
             <div>
               <label style={{ display: 'block', fontSize: 12, color: 'var(--text-secondary)', marginBottom: 4 }}>传输协议</label>
-              <select style={selectStyle} defaultValue="http">
+              <select
+                value={form.transport}
+                onChange={e => setForm(p => ({ ...p, transport: e.target.value as 'http' | 'stdio' | 'ws' }))}
+                style={selectStyle}>
                 <option value="http">HTTP</option>
                 <option value="stdio">STDIO</option>
                 <option value="ws">WebSocket</option>
@@ -135,11 +174,17 @@ export function MCPServersSection() {
             </div>
             <div style={{ gridColumn: 'span 2' }}>
               <label style={{ display: 'block', fontSize: 12, color: 'var(--text-secondary)', marginBottom: 4 }}>端点地址</label>
-              <input placeholder="http://localhost:3100 或 npx @modelcontextprotocol/server-xxx" style={{ ...inputStyle, width: '100%' }} />
+              <input
+                value={form.endpoint}
+                onChange={e => setForm(p => ({ ...p, endpoint: e.target.value }))}
+                placeholder="http://localhost:3100 或 npx @modelcontextprotocol/server-xxx" style={{ ...inputStyle, width: '100%' }} />
             </div>
             <div style={{ gridColumn: 'span 2' }}>
               <label style={{ display: 'block', fontSize: 12, color: 'var(--text-secondary)', marginBottom: 4 }}>描述</label>
-              <input placeholder="服务器功能描述" style={{ ...inputStyle, width: '100%' }} />
+              <input
+                value={form.description}
+                onChange={e => setForm(p => ({ ...p, description: e.target.value }))}
+                placeholder="服务器功能描述" style={{ ...inputStyle, width: '100%' }} />
             </div>
           </div>
           <div style={{ display: 'flex', gap: 8 }}>

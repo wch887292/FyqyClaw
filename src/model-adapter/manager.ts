@@ -1,6 +1,6 @@
 import type { ModelAdapter, ModelConfig } from './types'
 import type { CompletionRequest, CompletionResponse } from '@shared/types/ai'
-import { OpenAIAdapter, OpenAICompatibleAdapter } from './adapters'
+import { OpenAIAdapter, OpenAICompatibleAdapter, AnthropicAdapter } from './adapters'
 import { ModelRouter } from './router'
 import { MODEL_PRESETS } from './presets'
 
@@ -34,9 +34,12 @@ export class ModelAdapterManager {
           temperature: 0.7,
           maxTokens: model.maxTokens,
         }
-        const adapter = preset.provider === 'openai'
-          ? new OpenAIAdapter(config)
-          : new OpenAICompatibleAdapter(config)
+        const adapter =
+          preset.provider === 'openai'
+            ? new OpenAIAdapter(config)
+            : preset.provider === 'anthropic'
+              ? new AnthropicAdapter(config)
+              : new OpenAICompatibleAdapter(config)
         this.registerAdapter(adapter, model.id)
 
         this.router.registerRoute({

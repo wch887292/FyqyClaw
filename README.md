@@ -135,9 +135,9 @@
 
 | 平台 | 支持情况 |
 |------|---------|
-| Windows 10+ | ✅ 完全支持 |
-| macOS 12+ | ✅ 完全支持 |
-| Linux (Ubuntu 20.04+) | ✅ 完全支持 |
+| Windows 10+ | ✅ 完全支持（CI 自动发布 NSIS 安装包） |
+| macOS 12+ | ⚠️ 仅本地未签名构建可用（需 macOS 环境：`npm run build:mac`），CI 官方签名包待配置 Apple 开发者证书 |
+| Linux (Ubuntu 20.04+) | ✅ 完全支持（CI 自动发布 AppImage + deb） |
 | WSL 2 | ✅ 支持 |
 
 ### 安装
@@ -196,11 +196,11 @@ npm run build:linux    # Linux AppImage + deb（需 Linux 环境）
 
 | 产物 | 平台 | 格式 |
 |------|------|------|
-| `FyqyClaw-Setup-${version}-win-x64.exe` | Windows | NSIS 安装器 |
-| `FyqyClaw-${version}-mac-x64.dmg` | macOS Intel | DMG 磁盘映像 |
-| `FyqyClaw-${version}-mac-arm64.dmg` | macOS Apple Silicon | DMG 磁盘映像 |
-| `FyqyClaw-${version}-linux-x86_64.AppImage` | Linux | AppImage 便携包 |
-| `FyqyClaw-${version}-linux-amd64.deb` | Linux (Debian/Ubuntu) | deb 包 |
+| `FyqyClaw-Setup-${version}-win-x64.exe` | Windows | NSIS 安装器（CI 发布） |
+| `FyqyClaw-${version}-mac-x64.dmg` | macOS Intel | DMG 磁盘映像（仅本地构建） |
+| `FyqyClaw-${version}-mac-arm64.dmg` | macOS Apple Silicon | DMG 磁盘映像（仅本地构建） |
+| `FyqyClaw-${version}-linux-x86_64.AppImage` | Linux | AppImage 便携包（CI 发布） |
+| `FyqyClaw-${version}-linux-amd64.deb` | Linux (Debian/Ubuntu) | deb 包（CI 发布） |
 
 ### 首次使用
 
@@ -284,7 +284,7 @@ FyqyClaw/
 | **构建打包** | electron-builder (NSIS / DMG / AppImage / deb) |
 | **代码编辑器** | Monaco Editor 0.52 |
 | **状态管理** | Zustand 4 + Immer 10 |
-| **终端** | Xterm.js 5 |
+| **终端** | 内置终端面板（自定义实现，非 Xterm.js） |
 | **AI 模型** | OpenAI / Anthropic / DeepSeek / 智谱 / 通义千问 / Google Gemini |
 | **协议** | Model Context Protocol (MCP) |
 | **安全** | 三重加密沙箱、隐私模式 |
