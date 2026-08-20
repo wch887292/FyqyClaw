@@ -65,14 +65,14 @@ export class SkillsManager {
   }
 
   async installFromMarketplace(skillId: string): Promise<boolean> {
-    // In production, this would download and register from skill marketplace
-    console.log(`[Skills] Installing from marketplace: ${skillId}`)
-    return true
+    // 技能市场尚未接入：如实返回未安装，避免误导用户以为已安装成功
+    console.warn(`[Skills] 技能市场未接入，无法安装: ${skillId}`)
+    return false
   }
 
   async importLocalSkill(filePath: string): Promise<boolean> {
-    // In production, this would load a skill from a local file
-    console.log(`[Skills] Importing local skill: ${filePath}`)
-    return true
+    // 本地技能导入尚未接入：如实返回未导入，避免误导用户
+    console.warn(`[Skills] 本地技能导入未接入: ${filePath}`)
+    return false
   }
 }

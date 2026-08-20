@@ -1,12 +1,25 @@
 import React, { useState } from 'react'
-import { allSkills, type SkillEntry } from '../../mock-data'
+import { type SkillEntry } from '../../mock-data'
 import { SkillsManager } from '@skills/manager'
 
 // 真实技能管理器实例：安装/卸载会同步到管理器（供引擎/执行器感知启用状态）
 const skillsManager = new SkillsManager()
 
+// 将真实管理器中的技能定义映射为 UI 展示结构（弃用任何伪造的示例技能）
+function toUiSkill(s: ReturnType<SkillsManager['getSkills']>[number]): SkillEntry {
+  return {
+    id: s.id,
+    name: s.name,
+    description: s.description,
+    version: s.version,
+    author: s.author,
+    status: s.enabled ? 'installed' : 'available',
+    category: s.category,
+  }
+}
+
 export function SkillsSection() {
-  const [skills, setSkills] = useState<SkillEntry[]>(allSkills)
+  const [skills, setSkills] = useState<SkillEntry[]>(() => skillsManager.getSkills().map(toUiSkill))
   const [filter, setFilter] = useState<'all' | 'installed' | 'available' | 'updatable'>('all')
 
   const filteredSkills = filter === 'all'

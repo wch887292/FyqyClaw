@@ -5,7 +5,8 @@ import { ContextManager } from '../context/context-manager'
 import { CodeReviewEngine } from '../review/code-review'
 import { ModelAdapterManager } from '../../model-adapter/manager'
 import type { ModelConfig } from '../../model-adapter/types'
-import { writeFile, getCwd } from '../../main/utils/electron-bridge'
+import { writeFile } from '../../main/utils/electron-bridge'
+import path from 'path'
 
 interface ParsedCodeBlock {
   language: string
@@ -133,7 +134,11 @@ export class AgentEngine {
       retryable: true,
       timeout: 60000,
       execute: async (params) => {
-        const { description, language } = params as { description: string; language: string }
+        // planner 步骤参数含 originalDescription（需求原文），兼容直接调用时的 description
+        const { language } = params as { description?: string; language?: string }
+        const description = ((params as { description?: string }).description ??
+          (params as { originalDescription?: string }).originalDescription ??
+          '').toString()
         console.log(
           `[SOLO] [Capability] 🔨 开始生成代码`,
           `\n  语言: ${language || '未指定'}`,
@@ -187,7 +192,11 @@ export class AgentEngine {
       retryable: true,
       timeout: 60000,
       execute: async (params) => {
-        const { description, language } = params as { description: string; language: string }
+        // 兼容 planner 步骤参数（originalDescription）与直接调用（description）
+        const { language } = params as { description?: string; language?: string }
+        const description = ((params as { description?: string }).description ??
+          (params as { originalDescription?: string }).originalDescription ??
+          '').toString()
         console.log(
           `[SOLO] [Capability] ✏️ 开始修改代码`,
           `\n  需求: ${description.substring(0, 120)}${description.length > 120 ? '...' : ''}`
@@ -223,10 +232,27 @@ export class AgentEngine {
       retryable: true,
       timeout: 60000,
       execute: async (params) => {
-        const { code } = params as { code: string }
+        // planner 步骤传 intent/language/framework/detail（无 code），直接调用可能传 code；
+        // 兼容两者：有 code 则分析代码，否则基于需求描述做需求/方案分析
+        const p = params as { code?: string; intent?: string; language?: string; framework?: string; detail?: string; description?: string; originalDescription?: string }
+        const code = p.code || ''
         if (!code || code.length < 10) {
-          console.warn('[SOLO] [Capability] ⚠️ 代码分析跳过：代码过短')
-          return '代码内容过短，无法进行有效分析。'
+          const intentText = p.intent || '通用'
+          const desc = p.description || p.originalDescription || ''
+          console.log(`[SOLO] [Capability] 🔍 开始分析（无代码输入，基于需求描述）`, `\n  意图: ${intentText}`, `\n  语言: ${p.language || '未指定'}`, `\n  框架: ${p.framework || '未指定'}`)
+          const messages: ChatMessage[] = [
+            {
+              role: 'system',
+              content: '你是一位资深的软件架构师，擅长需求分析、技术方案设计与风险识别。请基于给定的需求信息给出：1) 需求理解 2) 技术选型建议 3) 关键风险与注意事项。',
+            },
+            {
+              role: 'user',
+              content: `需求意图: ${intentText}\n${desc ? `需求描述: ${desc}\n` : ''}${p.detail ? `细节: ${p.detail}\n` : ''}${p.language ? `语言: ${p.language}\n` : ''}${p.framework ? `框架: ${p.framework}` : ''}`,
+            },
+          ]
+          const result = await this.callAI(messages)
+          console.log(`[SOLO] [Capability] ✅ 分析完成（描述分析），输出长度: ${result.length} 字符`)
+          return result
         }
         const truncated = code.length > 8000 ? code.substring(0, 8000) + '\n\n... (代码过长，已截断)' : code
         console.log(
@@ -263,15 +289,17 @@ export class AgentEngine {
 
     this.registerCapability({
       name: 'test',
-      description: '运行自动化测试',
+      description: '生成测试策略并在支持的环境下真实运行测试命令',
       retryable: true,
       timeout: 60000,
       execute: async (params) => {
         const { command } = params as { command: string }
+        const testCommand = command || 'npm test'
         console.log(
-          `[SOLO] [Capability] 🧪 开始测试分析`,
-          `\n  测试命令: ${command || '默认测试命令'}`
+          `[SOLO] [Capability] 🧪 开始测试（生成策略 + 真实运行）`,
+          `\n  测试命令: ${testCommand}`
         )
+        // 1) AI 生成测试策略与用例建议
         const messages: ChatMessage[] = [
           {
             role: 'system',
@@ -285,15 +313,19 @@ export class AgentEngine {
           },
           {
             role: 'user',
-            content: `测试需求：${command || '运行项目自动化测试，验证功能正确性'}`,
+            content: `测试需求：${testCommand}`,
           },
         ]
-        const result = await this.callAI(messages)
-        console.log(
-          `[SOLO] [Capability] ✅ 测试分析完成`,
-          `\n  分析结果长度: ${result.length} 字符`
-        )
-        return result
+        const plan = await this.callAI(messages)
+
+        // 2) 真实运行测试命令（经沙箱策略加固的主进程边界）
+        const run = await this.runShellCommand(testCommand)
+        const runBlock = run.blocked
+          ? `\n\n### 真实执行结果\n⚠️ 命令被安全策略拦截，未执行。`
+          : `\n\n### 真实执行结果 (exit ${run.ok ? 0 : 1})\n\`\`\`\n${run.output.slice(0, 2000)}\n\`\`\``
+
+        console.log(`[SOLO] [Capability] ✅ 测试完成（策略长度 ${plan.length}，运行 ${run.ok ? '成功' : '失败/受限'}）`)
+        return `${plan}${runBlock}`
       },
     })
 
@@ -344,6 +376,35 @@ export class AgentEngine {
         return result
       },
     })
+
+    this.registerCapability({
+      name: 'review',
+      description: '对生成/修改的代码做 AI 代码审查',
+      retryable: true,
+      timeout: 60000,
+      execute: async (params) => {
+        // 审查真实落盘/生成的文件（与 Phase 3 相同的可信审查逻辑），
+        // 让 planner 计划中的 review 步骤不再是占位输出
+        const { language, filePath } = params as { language?: string; filePath?: string }
+        if (this.generatedFiles.length === 0) {
+          console.log(`[SOLO] [Capability] 👀 审查跳过：无生成文件`)
+          return '审查跳过：本次任务没有生成或修改任何代码文件。'
+        }
+        const codeDiff = this.generatedFiles
+          .map(f => `=== ${f.filePath} ===\n` + f.content.split('\n').map(l => `+ ${l}`).join('\n'))
+          .join('\n')
+        const results = await this.codeReview.review({
+          diff: codeDiff,
+          language: language || this.generatedFiles[0].language,
+          filePath: filePath || this.generatedFiles[0].filePath,
+        })
+        const summary = results.length > 0
+          ? results.map(r => `- [${r.severity}] 行${r.line}: ${r.message}`).join('\n')
+          : '未发现明显问题。'
+        console.log(`[SOLO] [Capability] 👀 代码审查完成，发现问题: ${results.length} 个`)
+        return `### 代码审查结果\n\n${summary}`
+      },
+    })
   }
 
   registerCapability(capability: AgentCapability): void {
@@ -365,15 +426,23 @@ export class AgentEngine {
     this.fileWriter = writer
   }
 
-  /** 相对路径解析为绝对路径：绝对路径原样使用；相对路径基于工作区根目录，无根目录时回退到进程 cwd */
-  private resolvePath(filePath: string): string {
-    if (filePath.startsWith('/') || /^[A-Za-z]:[\\/]/.test(filePath)) {
-      return filePath
+  /**
+   * 相对路径解析为绝对路径。
+   * 安全约束：
+   *  - 绝对路径：仅当落在工作区根目录内才允许（防写到 /etc、~/.ssh 等任意位置）；越界返回 null
+   *  - 未设置工作区根目录时：拒绝任何写盘路径（要求用户先打开项目目录），返回 null
+   */
+  private resolvePath(filePath: string): string | null {
+    const root = this.workspaceRoot || this.workspaceResolver?.()
+    if (!root || root === '/') {
+      // 无安全根目录：拒绝写盘，要求用户先打开项目目录
+      return null
     }
-    const base = this.workspaceRoot || getCwd()
-    if (!base || base === '/') return filePath.startsWith('/') ? filePath : '/' + filePath
-    const sep = base.endsWith('/') || base.endsWith('\\') ? '' : '/'
-    return base + sep + filePath
+    const isAbs = filePath.startsWith('/') || /^[A-Za-z]:[\\/]/.test(filePath)
+    const abs = isAbs ? filePath : path.resolve(root, filePath)
+    const rel = path.relative(root, abs)
+    const within = rel === '' || (!rel.startsWith('..') && !path.isAbsolute(rel))
+    return within ? abs : null
   }
 
   setOnProgress(callback: (task: AgentTask) => void): void {
@@ -472,7 +541,18 @@ export class AgentEngine {
           const capability = this.capabilities.get(step.action)
           if (capability) {
             console.log(`[SOLO]   🔄 步骤 ${step.id} 执行能力: ${capability.name} (尝试 ${attempt}/${maxAttempts})`)
-            taskStep.output = await capability.execute(step.params)
+            // 能力级超时保护：即使模型适配器未内置超时，也不会无限挂起；
+            // 能力提前完成时清除定时器，避免悬挂的 timer 引用
+            const timeoutMs = capability.timeout || 120000
+            let timeoutId: ReturnType<typeof setTimeout> | undefined
+            const timeoutPromise = new Promise<string>((_, reject) => {
+              timeoutId = setTimeout(() => reject(new Error(`能力 ${capability.name} 执行超时（${timeoutMs}ms）`)), timeoutMs)
+            })
+            try {
+              taskStep.output = await Promise.race([capability.execute(step.params), timeoutPromise])
+            } finally {
+              if (timeoutId) clearTimeout(timeoutId)
+            }
           } else {
             console.log(`[SOLO]   ⚠️ 步骤 ${step.id} 无匹配能力，使用默认执行`)
             taskStep.output = `步骤 ${step.action} 已执行`
@@ -615,6 +695,28 @@ export class AgentEngine {
     const summaryText = this.generateSummaryText()
 
     // Phase 5: Complete
+    // 最终状态由步骤结果汇总：存在失败/未执行步骤时标记 failed，而非无条件 completed
+    const allSteps = this.currentTask!.steps
+    const failedStep = allSteps.find(s => s.status === 'failed')
+    const hasPending = allSteps.some(s => s.status === 'pending')
+    if (failedStep) {
+      this.status = 'error'
+      this.currentTask!.status = 'failed'
+      this.currentTask!.error = `步骤 ${failedStep.id} 执行失败: ${failedStep.output || '未知错误'}`
+      this.currentTask!.result = summaryText
+      this.notifyProgress()
+      console.warn(`[SOLO] ⚠️ 任务完成但有 ${this.errorHistory.length} 个错误，状态标记为 failed`)
+      return this.currentTask!
+    }
+    if (hasPending) {
+      console.warn(`[SOLO] ⚠️ 存在未执行的步骤（依赖失败被跳过），任务标记为 failed`)
+      this.status = 'error'
+      this.currentTask!.status = 'failed'
+      this.currentTask!.error = '部分步骤未执行（依赖失败被跳过）'
+      this.currentTask!.result = summaryText
+      this.notifyProgress()
+      return this.currentTask!
+    }
     this.status = 'completed'
     this.currentTask!.status = 'completed'
     this.currentTask!.result = summaryText
@@ -702,6 +804,32 @@ export class AgentEngine {
   }
 
   /**
+   * 经已加固的沙箱边界执行命令（spawn 前主进程强制策略 + 隐私/白名单）。
+   * 非 Electron 环境（如测试）下不可用，调用方应自行降级。
+   */
+  private async runShellCommand(command: string): Promise<{ ok: boolean; output: string; blocked?: boolean }> {
+    const electronAPI = (typeof window !== 'undefined' && (window as any).electronAPI) || null
+    if (!electronAPI?.invoke) {
+      return { ok: false, output: '当前环境不支持执行命令（仅 Electron 桌面端可运行测试）' }
+    }
+    try {
+      const res = await electronAPI.invoke('sandbox:execute', {
+        id: `agent-test-${Date.now()}`,
+        command,
+        cwd: this.workspaceRoot || this.workspaceResolver?.() || undefined,
+        timeout: 60000,
+      })
+      return {
+        ok: res.exitCode === 0,
+        output: res.stdout || res.stderr || '',
+        blocked: !!res.wasBlocked,
+      }
+    } catch (err: any) {
+      return { ok: false, output: `命令执行失败: ${err?.message || err}` }
+    }
+  }
+
+  /**
    * Parse AI output to extract code blocks with optional file paths
    * Supports formats:
    *   ```language:file/path.ts
@@ -731,7 +859,9 @@ export class AgentEngine {
       }
 
       // Detect code block start
-      const fenceStart = line.match(/^```(\w+)?(?:\s*[:-]\s*(.+))?$/)
+      // 支持语言为任意字符（c++/c#/bash/.env 等），路径分隔支持 冒号/横线/空格（```typescript src/a.ts）
+      const fenceStart = line.match(/^```([A-Za-z0-9_+#.\-]*)?(?:\s*[:-]\s*|\s+)(.+)$/) ||
+        line.match(/^```([A-Za-z0-9_+#.\-]*)$/)
       if (fenceStart) {
         if (currentBlock) {
           // Close current block (nested/accidental)
@@ -798,7 +928,31 @@ export class AgentEngine {
         relPath = `generated/${block.language}-${hash}${ext}`
       }
 
+      const linesAdded = block.code.split('\n').length
       const absPath = this.resolvePath(relPath)
+      if (!absPath) {
+        // 路径越界或尚未打开项目目录：仅保留内存态，拒绝落盘（安全约束）
+        console.warn(`[SOLO] ⚠️ 跳过写盘（路径越界或尚未打开项目目录）: ${relPath}`)
+        const existingIdx = this.generatedFiles.findIndex(f => f.filePath === relPath)
+        if (existingIdx < 0) this.generatedFiles.push({ filePath: relPath, language: block.language, content: block.code, action: 'created' })
+        const existingChange = this.changeSummary.changes.find(c => c.file === relPath)
+        if (!existingChange) {
+          this.changeSummary.filesChanged.push(relPath)
+          this.changeSummary.changes.push({
+            file: relPath,
+            type: 'created',
+            summary: `Generated ${block.language} code (未写盘：路径越界/未打开项目目录)`,
+            linesAdded,
+            linesRemoved: 0,
+          })
+          this.changeSummary.statistics.totalFiles++
+          this.changeSummary.statistics.totalLinesAdded += linesAdded
+          if (!this.changeSummary.statistics.languages.includes(block.language)) {
+            this.changeSummary.statistics.languages.push(block.language)
+          }
+        }
+        continue
+      }
       const isExisting = this.generatedFiles.some(f => f.filePath === absPath)
       const change: FileChange = {
         filePath: absPath,
@@ -816,7 +970,6 @@ export class AgentEngine {
       }
 
       // 真实落盘（通过 IPC 写入用户项目目录）
-      const linesAdded = block.code.split('\n').length
       let written = false
       try {
         written = await this.fileWriter(absPath, block.code)
