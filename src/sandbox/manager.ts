@@ -10,6 +10,7 @@ export class SandboxManager {
   private monitor: ActivityMonitor
   private events: SecurityEvent[] = []
   private onSecurityEvent?: (event: SecurityEvent) => void
+  private static readonly MAX_EVENTS = 500 // 安全事件环形上限，防止长时间运行内存无限增长
 
   constructor(config?: Partial<SandboxConfig>) {
     this.config = {
@@ -46,6 +47,9 @@ export class SandboxManager {
         details: { command: request.command },
       }
       this.events.push(event)
+      if (this.events.length > SandboxManager.MAX_EVENTS) {
+        this.events.splice(0, this.events.length - SandboxManager.MAX_EVENTS)
+      }
       this.onSecurityEvent?.(event)
 
       return {
@@ -79,6 +83,7 @@ export class SandboxManager {
     this.config = { ...this.config, ...config }
     this.policy.updateConfig(this.config)
     this.monitor.updateConfig(this.config)
+    this.executor.updateConfig(this.config)
   }
 
   getConfig(): SandboxConfig {

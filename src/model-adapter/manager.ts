@@ -98,7 +98,11 @@ export class ModelAdapterManager {
   }
 
   configureCustomModel(config: ModelConfig): void {
-    const adapter = new OpenAICompatibleAdapter(config)
+    // 按 provider 选择适配器：anthropic 走真 AnthropicAdapter，其余走 OpenAI 兼容适配
+    const adapter =
+      config.provider === 'anthropic'
+        ? new AnthropicAdapter(config)
+        : new OpenAICompatibleAdapter(config)
     this.registerAdapter(adapter, config.modelName)
     this.router.registerRoute({
       model: config.modelName,

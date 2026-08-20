@@ -11,6 +11,9 @@ import { BrowserPanel } from './BrowserPanel'
 import { CrawlerPanel } from './CrawlerPanel'
 import type { FileNode } from '@shared/types/ide'
 
+// 模块级自增计数器，避免同毫秒创建的新文件 id 冲突
+let newFileCounter = 0
+
 export function Sidebar() {
   const activeView = useAppStore(s => s.activeSidebarView)
   const sidebarWidth = useAppStore(s => s.sidebarWidth)
@@ -29,6 +32,8 @@ export function Sidebar() {
     const result = await openFolderDialog()
     if (result) {
       setRootPath(result)
+      // 同步工作区根到主进程，约束 fs:* 操作边界（防任意读写）
+      ;(window as any).electronAPI?.setWorkspaceRoot?.(result)
     }
   }
 
@@ -96,11 +101,13 @@ export function Sidebar() {
             )}
             <button
               onClick={() => {
-                const counter = Date.now() % 1000
+                // 自增计数器 + 时间戳，避免同毫秒创建的文件 id 冲突
+                newFileCounter++
+                const id = `new-${Date.now()}-${newFileCounter}`
                 useEditorStore.getState().openFile({
-                  id: `new-${counter}`,
-                  path: `untitled-${counter}`,
-                  title: `Untitled-${counter}`,
+                  id,
+                  path: `untitled-${newFileCounter}`,
+                  title: `Untitled-${newFileCounter}`,
                   language: 'plaintext',
                   isDirty: false,
                   content: '',

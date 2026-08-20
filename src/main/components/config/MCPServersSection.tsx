@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { mockServers, type MCPServer } from '../../mock-data'
+import { type MCPServer } from '../../mock-data'
 import { MCPServerManager } from '@mcp/manager'
 
 const LOG_PREFIX = '[Config-MCP]'
@@ -7,8 +7,21 @@ const LOG_PREFIX = '[Config-MCP]'
 // 真实管理器实例：注册/删除会同步到内存中的 MCP 管理器（供引擎/ApiServer 使用）
 const mcpManager = new MCPServerManager()
 
+// 将真实管理器中的配置映射为 UI 展示结构（不再使用任何伪造的「已连接」示例）
+function toUiServer(c: ReturnType<MCPServerManager['getServers']>[number]): MCPServer {
+  return {
+    id: c.id,
+    name: c.name,
+    transport: c.transport,
+    endpoint: c.endpoint ?? c.command ?? '',
+    status: c.enabled ? 'connected' : 'disconnected',
+    toolsCount: 0,
+    description: '',
+  }
+}
+
 export function MCPServersSection() {
-  const [servers, setServers] = useState<MCPServer[]>(mockServers)
+  const [servers, setServers] = useState<MCPServer[]>(() => mcpManager.getServers().map(toUiServer))
   const [showAddForm, setShowAddForm] = useState(false)
   const [form, setForm] = useState({ name: '', transport: 'http' as 'http' | 'stdio' | 'ws', endpoint: '', description: '' })
   const prevServersRef = useRef(servers)

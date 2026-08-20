@@ -1,6 +1,12 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
+import path from 'path'
 import { AgentEngine } from '@orchestrator/agent/engine'
 import type { ModelConfig } from '@model-adapter/types'
+
+// 跨平台期望路径：resolvePath 使用 path.resolve，Windows 下会产出原生分隔符路径
+const proj = path.resolve('/proj')
+const projHello = path.resolve(proj, 'src/hello.ts')
+const projLogin = path.resolve(proj, 'src/login.ts')
 
 // 注入式落盘器：记录调用并返回成功，便于在无文件系统的测试环境断言真实写盘行为
 function makeFileWriter() {
@@ -30,23 +36,45 @@ describe('P0-4 SOLO Agent 真实写盘', () => {
     )
 
     expect(fw.calls.length).toBe(1)
-    expect(fw.calls[0].path).toBe('/proj/src/hello.ts')
+    expect(fw.calls[0].path).toBe(projHello)
     expect(fw.calls[0].content).toBe("export const hi = 'world'")
 
     // 生成文件登记为真实绝对路径
     const files = engine.getGeneratedFiles()
     expect(files.length).toBe(1)
-    expect(files[0].filePath).toBe('/proj/src/hello.ts')
+    expect(files[0].filePath).toBe(projHello)
     expect(files[0].action).toBe('created')
   })
 
-  it('绝对路径原样使用，不做拼接', async () => {
+  it('绝对路径落在工作区内时按原路径写盘', async () => {
     engine.setWorkspaceRoot('/proj')
     await engine.applyCodeBlocks(
-      [{ language: 'python', filePath: '/abs/app.py', code: 'print(1)' }],
+      [{ language: 'python', filePath: '/proj/app.py', code: 'print(1)' }],
       'fix',
     )
-    expect(fw.calls[0].path).toBe('/abs/app.py')
+    expect(fw.calls.length).toBe(1)
+    expect(fw.calls[0].path).toBe('/proj/app.py')
+  })
+
+  it('绝对路径越出工作区时被拒绝，不写盘（防任意位置写文件）', async () => {
+    engine.setWorkspaceRoot('/proj')
+    await engine.applyCodeBlocks(
+      [{ language: 'python', filePath: '/etc/cron.d/evil.py', code: 'print(1)' }],
+      'fix',
+    )
+    expect(fw.calls.length).toBe(0)
+    // 变更汇总标注未写盘，而非落盘到越界路径
+    expect(engine.getChangeSummary().filesChanged).toContain('/etc/cron.d/evil.py')
+    expect(engine.getChangeSummary().changes[0].summary).toContain('未写盘')
+  })
+
+  it('未设置工作区根目录时拒绝写盘（要求先打开项目目录）', async () => {
+    // 不调用 setWorkspaceRoot，也无 workspaceResolver → 无安全根目录
+    await engine.applyCodeBlocks(
+      [{ language: 'ts', filePath: 'src/a.ts', code: 'const x = 1' }],
+      'generate',
+    )
+    expect(fw.calls.length).toBe(0)
   })
 
   it('变更汇总使用真实相对路径，而非伪造的 file-N 占位', async () => {
@@ -98,8 +126,8 @@ describe('P0-4 SOLO Agent 真实写盘', () => {
 
     const task = await eng.executeTask('修复登录模块的空指针 bug')
     expect(task.status).toBe('completed')
-    expect(fw.calls.some((c) => c.path === '/proj/src/login.ts')).toBe(true)
-    expect(eng.getGeneratedFiles().some((f) => f.filePath === '/proj/src/login.ts')).toBe(true)
+    expect(fw.calls.some((c) => c.path === projLogin)).toBe(true)
+    expect(eng.getGeneratedFiles().some((f) => f.filePath === projLogin)).toBe(true)
     // 统计应反映真实落盘文件，而非伪造占位
     expect(eng.getChangeSummary().statistics.totalFiles).toBeGreaterThanOrEqual(1)
   })

@@ -1,7 +1,7 @@
 import React, { useRef, useState, useCallback, useEffect } from 'react'
 import { useAppStore, type BottomTab } from '../stores/app-store'
 import { useResizable } from '../hooks/useResizable'
-import { mockReviewResults } from '../mock-data'
+import { type AIReviewEntry } from '../mock-data'
 import { CommandExecutor } from '../../sandbox/executor/command-executor'
 import { SandboxManager } from '../../sandbox/manager'
 
@@ -202,6 +202,19 @@ function TerminalPanel() {
     const sandbox = new SandboxManager()
     sandboxRef.current = sandbox
     executorRef.current = new CommandExecutor(sandbox.getConfig())
+
+    // 同步隐私模式 / 允许列表到主进程（主进程的沙箱策略据此强制生效）
+    const syncSandboxConfig = () => {
+      const st = useAppStore.getState()
+      ;(window as any).electronAPI?.configureSandbox?.({
+        privacyMode: st.privacyMode,
+        allowedCommands: sandbox.getConfig().allowedCommands,
+        enforceAllowlist: false,
+      })
+    }
+    syncSandboxConfig()
+    const unsub = useAppStore.subscribe(syncSandboxConfig)
+    return () => unsub()
   }, [])
 
   // Get current working directory
@@ -478,7 +491,8 @@ function ProblemsPanel() {
 }
 
 function AIReviewPanel() {
-  const [reviewResults] = useState(mockReviewResults)
+  // 仅展示真实审查结果（来自 SOLO 执行后的代码审查）。不再展示任何伪造/示例数据。
+  const [reviewResults] = useState<AIReviewEntry[]>([])
 
   const severityColors = { error: 'var(--accent-red)', warning: 'var(--accent-yellow)', info: 'var(--accent-blue)' }
   const severityLabels = { error: '错误', warning: '警告', info: '建议' }

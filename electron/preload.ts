@@ -16,6 +16,10 @@ contextBridge.exposeInMainWorld('electronAPI', {
   openFolder: () => ipcRenderer.invoke('dialog:open-folder'),
   openFile: () => ipcRenderer.invoke('dialog:open-file'),
 
+  // Security boundary sync (main process holds workspace root + sandbox config)
+  setWorkspaceRoot: (root: string) => ipcRenderer.invoke('workspace:set-root', root),
+  configureSandbox: (cfg: unknown) => ipcRenderer.invoke('sandbox:configure', cfg),
+
   // Generic IPC
   on: (channel: string, callback: (...args: unknown[]) => void) => {
     ipcRenderer.on(channel, (_event, ...args) => callback(...args))

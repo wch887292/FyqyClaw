@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react'
 import { useAppStore, type Command } from '../stores/app-store'
-import { openFolderDialog, openFileDialog } from '../utils/electron-bridge'
+import { useEditorStore } from '../stores/editor-store'
+import { openFolderDialog, openFileDialog, readFile } from '../utils/electron-bridge'
 
 export function CommandPalette() {
   const open = useAppStore(s => s.commandPaletteOpen)
@@ -41,9 +42,15 @@ export function CommandPalette() {
       category: '文件',
       shortcut: '',
       icon: '📁',
-      action: () => {
+      action: async () => {
         setOpen(false)
-        setTimeout(() => { openFolderDialog() }, 100)
+        const result = await openFolderDialog()
+        if (result) {
+          useAppStore.getState().setRootPath(result)
+          // 同步工作区根到主进程，约束 fs:* 操作边界（防任意读写）
+          ;(window as any).electronAPI?.setWorkspaceRoot?.(result)
+          useAppStore.getState().setToast(`已打开文件夹: ${result}`)
+        }
       },
     },
     {
@@ -53,9 +60,22 @@ export function CommandPalette() {
       category: '文件',
       shortcut: '',
       icon: '📄',
-      action: () => {
+      action: async () => {
         setOpen(false)
-        setTimeout(() => { openFileDialog() }, 100)
+        const filePath = await openFileDialog()
+        if (filePath) {
+          const content = await readFile(filePath)
+          const name = filePath.split(/[/\\]/).pop() || filePath
+          useEditorStore.getState().openFile({
+            id: filePath,
+            path: filePath,
+            title: name,
+            language: (filePath.split('.').pop() || 'plaintext').toLowerCase(),
+            isDirty: false,
+            content: content || '',
+          })
+          useAppStore.getState().setToast(`已打开文件: ${name}`)
+        }
       },
     },
     ...commands,

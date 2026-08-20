@@ -148,12 +148,16 @@ export async function readFile(filePath: string): Promise<string | undefined> {
 
 /**
  * Write content to a file. Uses Electron IPC in Electron, otherwise tries File System Access API.
+ * 透传主进程的真实结果（越界/失败时主进程返回 false），避免把失败误报为成功。
  */
 export async function writeFile(filePath: string, content: string): Promise<boolean> {
   if (isElectron) {
     try {
-      await (window as any).electronAPI.invoke('fs:write-file', filePath, content)
-      return true
+      const ok = await (window as any).electronAPI.invoke('fs:write-file', filePath, content)
+      if (ok === false) {
+        console.warn('[electron-bridge] writeFile 被主进程拒绝（可能路径越界）:', filePath)
+      }
+      return ok === true
     } catch (err) {
       console.error('[electron-bridge] writeFile 失败:', err)
       return false

@@ -24,6 +24,10 @@ export interface CommandResult {
   duration: number
   wasBlocked: boolean
   blockReason?: string
+  /** 非 Electron 环境下的模拟执行结果（无真实命令被运行） */
+  simulated?: boolean
+  /** 命令是否因超时被终止 */
+  timedOut?: boolean
 }
 
 export interface SecurityEvent {

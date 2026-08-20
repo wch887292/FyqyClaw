@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useAppStore } from '../../stores/app-store'
-import { mockModels, type ModelEntry } from '../../mock-data'
+import { type ModelEntry } from '../../mock-data'
 import { modelManager } from '../solo-engine'
 
 const LOG_PREFIX = '[Config-Models]'
@@ -35,7 +35,8 @@ function persistModels(list: ModelEntry[]): void {
 }
 
 export function ModelsSection() {
-  const [models, setModels] = useState<ModelEntry[]>(() => [...mockModels, ...loadPersistedModels()])
+  // 仅以用户真实添加的自定义模型作为初始数据（不再混入任何伪造的示例模型）
+  const [models, setModels] = useState<ModelEntry[]>(() => loadPersistedModels())
   const [showAddForm, setShowAddForm] = useState(false)
   const [newModel, setNewModel] = useState({
     name: '', provider: 'OpenAI', modelId: '', endpoint: '', apiKey: '',

@@ -436,6 +436,10 @@ export function CrawlerPanel() {
   // Listen for messages from iframe
   useEffect(() => {
     const handler = (e: MessageEvent) => {
+      // 安全校验：只接受来自本应用内嵌 iframe（srcdoc）的 postMessage，
+      // 防止用户抓取的任意页面伪造 element-picked/extracted 消息污染提取结果
+      if (e.origin !== window.location.origin) return
+      if (!e.source || e.source !== iframeRef.current?.contentWindow) return
       if (e.data?.type === 'element-picked') {
         setSelectedElement(JSON.stringify(e.data.info, null, 2))
         addLog(`选取元素: ${e.data.info.tag} - ${e.data.info.text?.substring(0, 50) || '无文本'}`)

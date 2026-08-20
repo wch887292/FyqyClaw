@@ -247,6 +247,8 @@ function WelcomePage() {
     if (result) {
       console.log('Opened folder:', result)
       setRootPath(result)
+      // 同步工作区根到主进程，约束 fs:* 操作边界（防任意读写）
+      ;(window as any).electronAPI?.setWorkspaceRoot?.(result)
       toast(`已打开文件夹: ${result}`)
     } else {
       const hasFileSystemAPI = typeof (window as any).showDirectoryPicker === 'function'

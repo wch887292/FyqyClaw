@@ -15,7 +15,10 @@ import { SettingsPanel } from './SettingsPanel'
 import { useAppStore, type Command } from '../stores/app-store'
 import { useEditorStore } from '../stores/editor-store'
 import { useKeyboardShortcuts } from '../hooks/useKeyboardShortcuts'
-import { openFolderDialog, openFileDialog } from '../utils/electron-bridge'
+import { openFolderDialog, openFileDialog, readFile } from '../utils/electron-bridge'
+
+// 模块级自增计数器，避免 Date.now() 同毫秒冲突导致新文件 id 重复
+let newFileCounter = 0
 
 export function AppLayout() {
   const mode = useAppStore(s => s.mode)
@@ -42,11 +45,12 @@ export function AppLayout() {
         shortcut: 'Ctrl+N',
         icon: '📄',
         action: () => {
-          const counter = Date.now() % 1000
+          newFileCounter++
+          const id = `new-${Date.now()}-${newFileCounter}`
           useEditorStore.getState().openFile({
-            id: `new-${counter}`,
-            path: `untitled-${counter}`,
-            title: `Untitled-${counter}`,
+            id,
+            path: `untitled-${newFileCounter}`,
+            title: `Untitled-${newFileCounter}`,
             language: 'plaintext',
             isDirty: false,
             content: '',
@@ -140,7 +144,15 @@ export function AppLayout() {
         description: '选择并打开项目文件夹',
         category: '文件',
         icon: '📁',
-        action: () => { openFolderDialog() },
+        action: async () => {
+          const result = await openFolderDialog()
+          if (result) {
+            useAppStore.getState().setRootPath(result)
+            // 同步工作区根到主进程，约束 fs:* 操作边界（防任意读写）
+            ;(window as any).electronAPI?.setWorkspaceRoot?.(result)
+            useAppStore.getState().setToast(`已打开文件夹: ${result}`)
+          }
+        },
       },
       {
         id: 'open-file',
@@ -148,7 +160,22 @@ export function AppLayout() {
         description: '打开文件到编辑器',
         category: '文件',
         icon: '📄',
-        action: () => { openFileDialog() },
+        action: async () => {
+          const filePath = await openFileDialog()
+          if (filePath) {
+            const content = await readFile(filePath)
+            const name = filePath.split(/[/\\]/).pop() || filePath
+            useEditorStore.getState().openFile({
+              id: filePath,
+              path: filePath,
+              title: name,
+              language: (filePath.split('.').pop() || 'plaintext').toLowerCase(),
+              isDirty: false,
+              content: content || '',
+            })
+            useAppStore.getState().setToast(`已打开文件: ${name}`)
+          }
+        },
       },
     ]
     registerCommands(globalCommands)

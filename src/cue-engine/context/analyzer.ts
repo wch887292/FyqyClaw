@@ -56,6 +56,12 @@ export class CodeAnalyzer {
   private extractImports(context: CompletionContext): ImportInfo[] {
     const imports: ImportInfo[] = []
     const code = context.prefix
+    // 排除 import/export 语句行后的代码，用于判断符号是否在业务代码中真正被使用
+    // （否则 import 语句自身包含符号名，isUsed 恒为 true，未使用导入建议永不生效）
+    const nonImportCode = code
+      .split('\n')
+      .filter(l => !/^\s*(import|from|export\s*\{)/.test(l))
+      .join('\n')
 
     // Extract import statements
     const importRegex = /import\s+\{([^}]+)\}\s+from\s+['"]([^'"]+)['"]/g
@@ -65,7 +71,7 @@ export class CodeAnalyzer {
       imports.push({
         source: match[2],
         symbols,
-        isUsed: symbols.every(s => code.includes(s)),
+        isUsed: symbols.every(s => nonImportCode.includes(s)),
       })
     }
 
@@ -75,7 +81,7 @@ export class CodeAnalyzer {
       imports.push({
         source: match[2],
         symbols: [match[1]],
-        isUsed: code.includes(match[1]),
+        isUsed: nonImportCode.includes(match[1]),
       })
     }
 

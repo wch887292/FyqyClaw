@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { useAppStore } from '../stores/app-store'
 import { useEditorStore } from '../stores/editor-store'
 import { useEditorRefStore } from '../stores/editor-ref-store'
-import { openFolderDialog, openFileDialog } from '../utils/electron-bridge'
+import { openFolderDialog, openFileDialog, readFile } from '../utils/electron-bridge'
 
 interface MenuItem {
   label: string
@@ -48,19 +48,28 @@ const createMenuGroups = (navigate: ReturnType<typeof useNavigate>): MenuGroup[]
           const editorStore = useEditorStore.getState()
           const filePath = await openFileDialog()
           if (filePath) {
+            const content = await readFile(filePath)
             editorStore.openFile({
               id: filePath,
               path: filePath,
               title: filePath.split(/[/\\]/).pop() || filePath,
-              language: filePath.split('.').pop() || 'plaintext',
+              language: (filePath.split('.').pop() || 'plaintext').toLowerCase(),
               isDirty: false,
-              content: '// 文件已打开: ' + filePath + '\n',
+              content: content || '',
             })
-            toast(`已打开文件: ${filePath}`)
+            toast(`已打开文件: ${filePath.split(/[/\\]/).pop() || filePath}`)
           }
         },
       },
-      { label: '打开文件夹...', shortcut: 'Ctrl+K Ctrl+O', action: () => { openFolderDialog().then(result => { if (result) toast(`已打开文件夹: ${result}`) }) } },
+      { label: '打开文件夹...', shortcut: 'Ctrl+K Ctrl+O', action: async () => {
+        const result = await openFolderDialog()
+        if (result) {
+          useAppStore.getState().setRootPath(result)
+          // 同步工作区根到主进程，约束 fs:* 操作边界（防任意读写）
+          ;(window as any).electronAPI?.setWorkspaceRoot?.(result)
+          toast(`已打开文件夹: ${result}`)
+        }
+      } },
       { label: '', divider: true },
       {
         label: '保存', shortcut: 'Ctrl+S', action: () => {

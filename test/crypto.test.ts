@@ -1,10 +1,16 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, afterEach } from 'vitest'
 import {
   obfuscateApiKey,
   encryptApiKey,
   decryptApiKey,
   resetSessionSalt,
 } from '../src/main/utils/crypto'
+
+// 用例中会篡改 globalThis.window 模拟设备指纹变化，务必在每个用例后恢复，避免污染后续用例
+const originalWindow = (globalThis as any).window
+afterEach(() => {
+  ;(globalThis as any).window = originalWindow
+})
 
 describe('obfuscateApiKey', () => {
   it('空字符串返回空', () => {

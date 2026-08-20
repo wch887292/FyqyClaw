@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import type { DevelopmentMode } from '@shared/types/core'
 import { getGitStatus } from '../utils/electron-bridge'
+import { useAppStore } from '../stores/app-store'
 
 interface StatusBarProps {
   mode: DevelopmentMode
@@ -10,6 +11,7 @@ interface StatusBarProps {
 export function StatusBar({ mode, onModeSwitch }: StatusBarProps) {
   const [time, setTime] = useState('')
   const [gitBranch, setGitBranch] = useState('')
+  const rootPath = useAppStore(s => s.rootPath)
 
   useEffect(() => {
     const updateTime = () => {
@@ -21,9 +23,14 @@ export function StatusBar({ mode, onModeSwitch }: StatusBarProps) {
     return () => clearInterval(timer)
   }, [])
 
+  // 仅在已打开项目文件夹时轮询 git 状态，避免无意义的每 5s IPC 调用
   useEffect(() => {
+    if (!rootPath) {
+      setGitBranch('')
+      return
+    }
     const fetchBranch = async () => {
-      const result = await getGitStatus()
+      const result = await getGitStatus(rootPath)
       if (result?.branch) {
         setGitBranch(result.branch)
       }
@@ -31,7 +38,7 @@ export function StatusBar({ mode, onModeSwitch }: StatusBarProps) {
     fetchBranch()
     const timer = setInterval(fetchBranch, 5000)
     return () => clearInterval(timer)
-  }, [])
+  }, [rootPath])
 
   const modeLabel = mode === 'ide' ? 'IDE 模式' : 'SOLO 模式'
   const modeColor = mode === 'ide' ? '#4ec9b0' : '#dcdcaa'
