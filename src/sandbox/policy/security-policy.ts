@@ -1,6 +1,20 @@
-import type { SandboxConfig, SandboxPolicy } from '../types'
+import type { SandboxConfig } from '../types'
+import {
+  evaluateSandboxPolicy,
+  type PolicyVerdict,
+  type PolicyOptions,
+} from '@sandbox/policy/evaluate'
 
-export class SecurityPolicy implements SandboxPolicy {
+/**
+ * 渲染层沙箱策略（UI 便利层）
+ *
+ * ⚠️ 仅为 UI 即时反馈，可被绕过；真正的安全边界在主进程 spawn 之前
+ * 由 `evaluateSandboxPolicy` 强制（见 src/sandbox/policy/evaluate.ts 注释）。
+ *
+ * 本类是对主进程策略的薄封装，保持 `SandboxManager` 既有的 `allowCommand` /
+ * `updateConfig` 调用约定，避免渲染层代码因 终极优化 重构而断裂。
+ */
+export class SecurityPolicy {
   private config: SandboxConfig
 
   constructor(config: SandboxConfig) {
@@ -11,41 +25,12 @@ export class SecurityPolicy implements SandboxPolicy {
     this.config = config
   }
 
-  allowCommand(command: string): { allowed: boolean; reason?: string } {
-    const cmdName = command.trim().split(/\s+/)[0]
-
-    // Check blocked commands
-    for (const blocked of this.config.blockedCommands) {
-      if (command.includes(blocked)) {
-        return { allowed: false, reason: `命令 "${blocked}" 被安全策略禁止执行` }
-      }
+  /** 命令级策略判定。渲染层无真实 cwd 上下文，传空串仅做命令级校验 */
+  allowCommand(command: string): PolicyVerdict {
+    const options: PolicyOptions = {
+      privacyMode: this.config.privacyMode,
+      allowedCommands: this.config.allowedCommands,
     }
-
-    // Check allowed commands (if configured)
-    if (this.config.allowedCommands.length > 0) {
-      const isAllowed = this.config.allowedCommands.some(c => cmdName === c || cmdName.endsWith(`/${c}`) || cmdName.endsWith(`\\${c}`))
-      if (!isAllowed) {
-        return { allowed: false, reason: `命令 "${cmdName}" 不在允许执行列表` }
-      }
-    }
-
-    return { allowed: true }
-  }
-
-  allowPath(path: string): { allowed: boolean; reason?: string } {
-    for (const restricted of this.config.restrictedPaths) {
-      if (path.startsWith(restricted)) {
-        return { allowed: false, reason: `路径 "${path}" 在受限路径列表中` }
-      }
-    }
-    return { allowed: true }
-  }
-
-  allowNetwork(host: string, port: number): { allowed: boolean; reason?: string } {
-    // In privacy mode, block all network access
-    if (this.config.privacyMode) {
-      return { allowed: false, reason: '隐私模式下禁止网络访问' }
-    }
-    return { allowed: true }
+    return evaluateSandboxPolicy(command, '', options)
   }
 }
