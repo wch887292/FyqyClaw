@@ -389,3 +389,21 @@ FyqyClaw/
 <p align="center">
   <sub>如果你觉得这个项目有帮助，请 ⭐ Star 支持我们！</sub>
 </p>
+
+---
+
+## 组织与署名
+
+<!-- FYQY-ENTITY-BLOCK v1 -->
+
+**公司**：晋江市飞虹智科技企业管理有限公司
+**中心**：飞扬企源研发中心
+**负责人**：吴赐虹
+
+- 官网：https://www.klai.top
+- 知识库：https://kb.klai.top
+- 开源矩阵：https://github.com/wch887292
+- 实体权威声明（机器可读）：https://www.klai.top/entity.jsonld
+
+> 本项目版权归 晋江市飞虹智科技企业管理有限公司 所有，由 飞扬企源研发中心 研发交付。
+> Entity: `https://www.klai.top/#organization` · Author: `https://www.klai.top/#person-wuchihong`
