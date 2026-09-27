@@ -2,6 +2,27 @@
 
 本文件记录 FyqyClaw（飞扬企源AI）所有值得注意的变更，格式参考 [Keep a Changelog](https://keepachangelog.com/)，版本号遵循 [语义化版本](https://semver.org/lang/zh-CN/)。
 
+## [1.2.0] - 2026-09-27
+
+「企业本地私有化智能体平台」架构升级版本 —— 将智能体重构为**可插拔 / 可独立 / 可对接**的平台底座，并补齐数据中台、业务数字员工、非技术工作台、营销 / GEO 自动化、权限审计与数字员工市场。
+
+### 新增（平台化底座）
+- **可插拔运行时**：新增 `src/agent-runtime/` 扩展点注册表（agent / skill / tool / model-provider / connector / transport 六类扩展点）+ Plugin 生命周期 + 运行时服务注册表，支持热插拔 `runtime.installPlugin(plugin)`。
+- **数据中台（知识库）**：五类目录（制度 / 产品 / 客户 / 培训 / 合同法务）+ 三级权限（public / internal / confidential）+ BM25 RAG + 命中率闸门（minMatchRatio=0.2）抗幻觉；`/kb` 管理面板与 `kb.ingest / kb.query / kb.list / kb.stats` 四技能。
+- **业务数字员工**：5 个开箱即用（客服 / 合同 / 报销 / 简历 / 营销），零代码扩展（改 `presets/business-agents.ts` 的 `BUSINESS_AGENTS` 数组即可）。
+- **Studio 非技术工作台（T2.1）**：对话式引导 + 表单 + 试运行，创建即编译成 Plugin 热上线并持久化；后端 `normalizeDraft` 强制关闭合同 / 发票 / 简历类角色外发开关。
+- **营销 MCP 连接器（T2.3）**：`/api/marketing/generate|publish`，合规闸门（publish 默认 `requireHumanApproval=true` + 每日上限 10 次）。
+- **GEO 自动化（T2.4）**：`geo-feed` 真读 `llms.txt` / `GEO-品牌事实页.md` 抽取品牌事实，`geo-run` 编排「投喂→分发→收录」工作流，`GeoScheduler` 默认注册 `geo-daily`（每 6h）但禁用待启。
+- **平台权限 / 审计 / 市场（T3）**：RBAC 三级（admin / operator / viewer）+ `ROLE_PERMISSIONS` 动作矩阵；`AuditLog` 关键写操作留痕、追责到人（actor 显示人名）；`Marketplace` 5 内置 + 3 市场专属，支持热插拔安装；`/platform` 页面与 `/api/auth/*`、`/api/audit/logs`、`/api/market/*` 端点。
+
+### 安全与合规
+- **零数据出境**：团队账号、审计流水、知识库全部本地 JSON 落盘，不上公有云。
+- **诚实可审计**：营销 / GEO 第三方默认不真发、不真查排名，接入仅留 `TODO(接入点)` 占位，绝不伪造；案例指标来自真实试点，未跑出数据前不编造。
+- 演示默认账号 `admin/admin123`（仅本地演示，生产必须更换口令或接入 SSO）。
+
+### 文档
+- 新增《使用说明书》《技术说明书》《能力边界说明书》（我能干什么 / 怎么干 / 能力边界），详见仓库根。
+
 ## [1.1.1] - 2026-08-21
 
 「终极优化」版本 —— 在 1.1.0 可信化落地基础上，把**安全边界真正钉死在主进程**、并**清除一切假数据/假成功**，让产品宣称与实现彻底一致。
