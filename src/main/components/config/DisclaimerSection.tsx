@@ -7,12 +7,12 @@ export function DisclaimerSection() {
         免责声明
       </h2>
       <p style={{ fontSize: 13, color: 'var(--text-secondary)', marginBottom: 24 }}>
-        FyqyClaw 飞扬企源 AI 开发工具免责声明
+        FyqyClaw 飞扬 AI 开发工具免责声明
       </p>
 
       <Card title="1. 软件使用声明">
         <p style={pStyle}>
-          FyqyClaw（以下简称"本软件"）由晋江市飞虹智科技企业管理有限公司（以下简称"本公司"）开发并维护。
+          FyqyClaw（以下简称"本软件"）由晋江市虹启智信息咨询工作室（以下简称"本公司"）开发并维护。
           本软件仅供用户在遵守适用法律法规的前提下使用。用户下载、安装、使用本软件即表示同意本免责声明的全部条款。
         </p>
       </Card>

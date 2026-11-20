@@ -308,7 +308,7 @@ function WelcomePage() {
         FyqyClaw
       </h1>
       <p style={{ fontSize: 14, color: 'var(--text-secondary)', maxWidth: 400, textAlign: 'center', lineHeight: 1.8 }}>
-        飞扬企源AI — 全流程AI开发工具
+        飞扬AI — 全流程AI开发工具
         <br />
         支持 IDE 精细操控与 SOLO AI 全自动开发双模式
       </p>

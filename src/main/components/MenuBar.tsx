@@ -226,7 +226,7 @@ const createMenuGroups = (navigate: ReturnType<typeof useNavigate>): MenuGroup[]
     items: [
       { label: '配置中心', action: () => { navigate('/config') } },
       { label: '', divider: true },
-      { label: '关于 FyqyClaw', action: () => toast('FyqyClaw v1.0.0\n飞扬企源AI — 全流程AI开发工具\n基于 Electron + React + Monaco Editor') },
+      { label: '关于 FyqyClaw', action: () => toast('FyqyClaw v1.0.0\n飞扬AI — 全流程AI开发工具\n基于 Electron + React + Monaco Editor') },
       { label: '文档', action: () => toast('文档功能开发中') },
       { label: '快捷键参考', shortcut: 'Ctrl+K Ctrl+R', action: () => {
         const shortcuts = [

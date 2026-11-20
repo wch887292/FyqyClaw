@@ -148,7 +148,7 @@ export function createKnowledgeBasePlugin(instance?: KnowledgeBase): Plugin {
       name: '企业知识库（数据中台）',
       version: '1.0.0',
       description: '五类目录 + 上传解析 + RAG 检索 + 权限分级，作为运行时共享服务',
-      author: '晋江市飞虹智科技企业管理有限公司 · 飞扬企源研发中心（吴赐虹）',
+      author: '晋江市虹启智信息咨询工作室 · 飞扬研发中心（吴赐虹）',
       tags: ['knowledge', 'rag', 'data-platform'],
     },
     async activate(api) {

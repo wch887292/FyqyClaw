@@ -1,7 +1,7 @@
 /**
  * 数字员工市场（T3.4 · 开放 skills/plugin 生态）。
  *
- * 署名：晋江市飞虹智科技企业管理有限公司 · 飞扬企源研发中心 · 吴赐虹
+ * 署名：晋江市虹启智信息咨询工作室 · 飞扬研发中心 · 吴赐虹
  *
  * 设计要点（呼应融合规划 T3.4）：
  *  - 市场 = 一份可浏览的「数字员工清单」，每个 item 是一个 DomainAgentConfig。
@@ -37,7 +37,7 @@ const MARKET_EXTRA: MarketItem[] = [
     clearance: 'internal',
     allowedConnectors: [],
     category: '人力资源',
-    author: '飞扬企源市场',
+    author: '飞扬市场',
     tags: ['hr', '制度', '员工服务'],
     featured: true,
   },
@@ -54,7 +54,7 @@ const MARKET_EXTRA: MarketItem[] = [
     clearance: 'internal',
     allowedConnectors: [],
     category: '人力资源',
-    author: '飞扬企源市场',
+    author: '飞扬市场',
     tags: ['培训', '陪练', 'onboarding'],
   },
   {
@@ -70,7 +70,7 @@ const MARKET_EXTRA: MarketItem[] = [
     clearance: 'internal',
     allowedConnectors: [],
     category: '经营',
-    author: '飞扬企源市场',
+    author: '飞扬市场',
     tags: ['经营', '财务', '决策'],
     featured: true,
   },
@@ -81,7 +81,7 @@ export const MARKET_ITEMS: MarketItem[] = [
   ...BUSINESS_AGENTS.map<MarketItem>((a) => ({
     ...a,
     category: '业务',
-    author: '飞扬企源内置',
+    author: '飞扬内置',
     tags: ['内置', '开箱即用'],
     featured: true,
   })),
@@ -152,7 +152,7 @@ export function createMarketPlugin(): Plugin {
       name: '数字员工市场',
       version: '1.0.0',
       description: 'T3.4 开放 plugin 生态：浏览并热插拔数字员工。',
-      author: '晋江市飞虹智科技企业管理有限公司 · 飞扬企源研发中心（吴赐虹）',
+      author: '晋江市虹启智信息咨询工作室 · 飞扬研发中心（吴赐虹）',
       tags: ['platform', 'marketplace', 'digital-employee'],
     },
     activate(api) {

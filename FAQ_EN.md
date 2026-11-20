@@ -21,7 +21,7 @@
 
 ### Q: What is FyqyClaw?
 
-FyqyClaw (Feiyang Qiyuan AI) is a full-lifecycle development tool that deeply integrates large-model AI capabilities. It supports **traditional IDE precision control** and **fully-autonomous AI Agent development** in two modes, covering the complete engineering chain: requirement breakdown, coding, project comprehension, debugging, code review, and change management.
+FyqyClaw (Feiyang AI) is a full-lifecycle development tool that deeply integrates large-model AI capabilities. It supports **traditional IDE precision control** and **fully-autonomous AI Agent development** in two modes, covering the complete engineering chain: requirement breakdown, coding, project comprehension, debugging, code review, and change management.
 
 ### Q: How is FyqyClaw different from Cursor, Windsurf, Trae, and other AI editors?
 
@@ -49,7 +49,7 @@ Yes. FyqyClaw is fully open-source and free under the **Apache License 2.0 (Apac
 
 ### Q: What does "FyqyClaw" mean?
 
-"Fyqy" is the pinyin abbreviation of "Feiyang Qiyuan" (飞扬企源). "Claw" implies precisely grabbing code and catching problems like a claw. Together it means "Feiyang Qiyuan's AI development weapon."
+"Fyqy" is the pinyin abbreviation of "Feiyang" (飞扬). "Claw" implies precisely grabbing code and catching problems like a claw. Together it means "Feiyang's AI development weapon."
 
 ---
 
@@ -371,7 +371,7 @@ When filing an issue, please provide:
 
 - **Official site**: https://klai.top
 - **Technical support email**: 361336873@qq.com
-- **Project lead**: Wu Cihong (Feiyang Qiyuan R&D Center)
+- **Project lead**: Wu Cihong (Feiyang R&D Center)
 
 ### Q: What open-source license does the project use?
 

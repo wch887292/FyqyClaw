@@ -65,7 +65,7 @@ export async function createFyqyRuntime(opts: FyqyRuntimeOptions = {}): Promise<
       name: '营销 MCP 连接器',
       version: '1.0.0',
       description: 'T2.3 营销数字员工：对接第三方数字人/短视频 API（不自研，合规闸门）。',
-      author: '晋江市飞虹智科技企业管理有限公司 · 飞扬企源研发中心（吴赐虹）',
+      author: '晋江市虹启智信息咨询工作室 · 飞扬研发中心（吴赐虹）',
       tags: ['marketing', 'mcp', 'connector'],
     },
     activate(api) {

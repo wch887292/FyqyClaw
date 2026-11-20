@@ -1,7 +1,7 @@
 /**
  * 平台管理演示页（T3 · 私有化部署 + 权限/审计 + 数字员工市场）。
  *
- * 署名：晋江市飞虹智科技企业管理有限公司 · 飞扬企源研发中心 · 吴赐虹
+ * 署名：晋江市虹启智信息咨询工作室 · 飞扬研发中心 · 吴赐虹
  *
  * 零依赖中文单页：团队账号（建号 + 登录态）/ 审计流水（实时）/ 数字员工市场（浏览 + 安装）。
  * 仅演示平台底座能力，生产 UI 可替换为 Electron/Web 正式控制台。
@@ -10,7 +10,7 @@
 export const PLATFORM_HTML = `<!doctype html>
 <html lang="zh-CN"><head><meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>平台管理 · 飞扬企源AI</title>
+<title>平台管理 · 飞扬AI</title>
 <style>
   :root{--bg:#0f172a;--card:#1e293b;--line:#334155;--txt:#e2e8f0;--muted:#94a3b8;--brand:#38bdf8;--ok:#34d399;--warn:#fbbf24}
   *{box-sizing:border-box}

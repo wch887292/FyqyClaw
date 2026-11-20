@@ -7,12 +7,12 @@ export function LicenseSection() {
         开源协议
       </h2>
       <p style={{ fontSize: 13, color: 'var(--text-secondary)', marginBottom: 24 }}>
-        FyqyClaw 飞扬企源 AI 开发工具开源许可信息
+        FyqyClaw 飞扬 AI 开发工具开源许可信息
       </p>
 
       <Card title="Apache License 2.0">
         <p style={pStyle}>
-          Copyright © 2026 晋江市飞虹智科技企业管理有限公司
+          Copyright © 2026 晋江市虹启智信息咨询工作室
         </p>
         <p style={pStyle}>
           本软件基于 <strong>Apache License 2.0（Apache-2.0）</strong> 开源授权。你可以免费使用、复制、修改、合并、发布、分发本软件，
@@ -99,7 +99,7 @@ limitations under the License.
         textAlign: 'center', marginTop: 32, padding: 16,
         fontSize: 12, color: 'var(--text-secondary)', opacity: 0.6,
       }}>
-        © 2026 晋江市飞虹智科技企业管理有限公司 · Apache License 2.0
+        © 2026 晋江市虹启智信息咨询工作室 · Apache License 2.0
       </div>
     </div>
   )

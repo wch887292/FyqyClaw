@@ -43,7 +43,7 @@ async function main() {
   console.log('\n【可独立】脱离任何 UI，直接创建会话并消费事件流：')
   const session = runtime.createSession('agent-solo')
   let reply = ''
-  for await (const ev of session.send('请用一句话介绍飞扬企源AI 的智能体能力。')) {
+  for await (const ev of session.send('请用一句话介绍飞扬AI 的智能体能力。')) {
     if (ev.type === 'agent.message') reply += ev.text
   }
   console.log('  智能体回复：', reply.slice(0, 120), reply.length > 120 ? '…' : '')

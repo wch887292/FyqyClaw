@@ -4,7 +4,7 @@
   <img src="docs/logo.svg" alt="FyqyClaw Logo" width="120" />
 </p>
 
-<h1 align="center">FyqyClaw · 飞扬企源 AI</h1>
+<h1 align="center">FyqyClaw · 飞扬 AI</h1>
 
 <p align="center">
   <b>全流程 AI 驱动开发工具 — IDE + AI Agent 双模式，从需求到代码一站式完成</b>
@@ -42,21 +42,21 @@
 
 ## 🌐 品牌与官网
 
-本仓库由 **晋江市飞虹智科技企业管理有限公司 · 飞扬企源研发中心** 维护，是飞虹智 klAI 开源生态的一部分。
+本仓库由 **晋江市虹启智信息咨询工作室 · 飞扬研发中心** 维护，是虹启智 klAI 开源生态的一部分。
 
-- 🏠 **官方网站**：[https://www.klai.top](https://www.klai.top) — 飞虹智 klAI · 泉州制造业 AI 服务商
+- 🏠 **官方网站**：[https://www.klai.top](https://www.klai.top) — 虹启智 klAI · 泉州制造业 AI 服务商
 - 📦 **开源矩阵**：[https://www.klai.top/opensource.html](https://www.klai.top/opensource.html)
-- 🤖 **AI 编程智能体**：[https://github.com/wch887292/feihong-code](https://github.com/wch887292/feihong-code) — 飞虹 Code
+- 🤖 **AI 编程智能体**：[https://github.com/wch887292/feihong-code](https://github.com/wch887292/feihong-code) — 虹启智 Code
 
 
 
 ## 📖 项目简介
 
-**FyqyClaw（飞扬企源AI）** 是一款深度融合 AI 大模型能力的全流程开发工具，覆盖需求拆解、代码编写、项目理解、调试运行、代码审查、变更管理完整工程链路。
+**FyqyClaw（飞扬AI）** 是一款深度融合 AI 大模型能力的全流程开发工具，覆盖需求拆解、代码编写、项目理解、调试运行、代码审查、变更管理完整工程链路。
 
 支持 **传统 IDE 精细操控** 与 **AI 智能体全自动开发** 双模式，适配个人开发与企业级工程迭代场景。
 
-> **项目名称含义**: "Fyqy" 来自"飞扬企源"（Feiyang Qiyuan）的拼音缩写，"Claw" 寓意像爪子一样精准抓取代码、捕获问题。整体寓意是"飞扬企源 AI 开发利器"。
+> **项目名称含义**: "Fyqy" 来自"飞扬"（Feiyang）的拼音缩写，"Claw" 寓意像爪子一样精准抓取代码、捕获问题。整体寓意是"飞扬 AI 开发利器"。
 
 ### 与 Cursor / Windsurf / Trae 对比
 
@@ -341,7 +341,7 @@ FyqyClaw/
 
 本项目基于 **Apache License 2.0（Apache-2.0）** 开源 — 详见 [LICENSE](LICENSE) 文件。
 
-版权所有 © 2026 [晋江市飞虹智科技企业管理有限公司](https://klai.top)
+版权所有 © 2026 [晋江市虹启智信息咨询工作室](https://klai.top)
 
 ---
 
@@ -349,15 +349,15 @@ FyqyClaw/
 
 - **官方网站**: [https://klai.top](https://klai.top)
 - **技术支持**: 361336873@qq.com
-- **项目负责人**: 吴赐虹（飞扬企源研发中心）
+- **项目负责人**: 吴赐虹（飞扬研发中心）
 
 ---
 
 ## 🌐 官方站点与关联开源项目
 
-本仓库由 **晋江市飞虹智科技企业管理有限公司 · 飞扬企源研发中心** 维护，是飞虹智 klAI 开源生态的一部分。
+本仓库由 **晋江市虹启智信息咨询工作室 · 飞扬研发中心** 维护，是虹启智 klAI 开源生态的一部分。
 
-- 🏠 **官方网站**：[https://klai.top](https://klai.top) — 飞虹智 klAI · 泉州制造业 AI 服务商
+- 🏠 **官方网站**：[https://klai.top](https://klai.top) — 虹启智 klAI · 泉州制造业 AI 服务商
 - 📦 **开源矩阵**：[https://klai.top/opensource.html](https://klai.top/opensource.html) — 全部开源项目一览
 - 📚 **AI 知识库**：[https://kb.klai.top](https://kb.klai.top) — 产品文档与智能问答（MaxKB 驱动）
 
@@ -366,11 +366,11 @@ FyqyClaw/
 | 项目 | 简介 |
 |------|------|
 | [GEO-SaaS](https://github.com/wch887292/geo-saa) | AI 驱动的全域 GEO 搜索优化平台 |
-| [飞虹智·企业AI平台](https://github.com/wch887292/fyqy-ai-agent) | 中小制造企业 AI 原生一体化管理平台 |
+| [虹启智·企业AI平台](https://github.com/wch887292/fyqy-ai-agent) | 中小制造企业 AI 原生一体化管理平台 |
 | [FyqyClaw](https://github.com/wch887292/FyqyClaw) | 全流程 AI 驱动开发工具（IDE + AI Agent）（本仓库） |
 | [星眠AI](https://github.com/wch887292/xmai) | 睡眠健康管理微信小程序 + 私有部署后端 |
 
-> ⭐ 如果这个项目对你有帮助，欢迎 **Star** 并分享，让更多人发现飞虹智开源生态！
+> ⭐ 如果这个项目对你有帮助，欢迎 **Star** 并分享，让更多人发现虹启智开源生态！
 
 
 ## 📚 文档导航
@@ -396,8 +396,8 @@ FyqyClaw/
 
 <!-- FYQY-ENTITY-BLOCK v1 -->
 
-**公司**：晋江市飞虹智科技企业管理有限公司
-**中心**：飞扬企源研发中心
+**公司**：晋江市虹启智信息咨询工作室
+**中心**：飞扬研发中心
 **负责人**：吴赐虹
 
 - 官网：https://www.klai.top
@@ -405,5 +405,5 @@ FyqyClaw/
 - 开源矩阵：https://github.com/wch887292
 - 实体权威声明（机器可读）：https://www.klai.top/entity.jsonld
 
-> 本项目版权归 晋江市飞虹智科技企业管理有限公司 所有，由 飞扬企源研发中心 研发交付。
+> 本项目版权归 晋江市虹启智信息咨询工作室 所有，由 飞扬研发中心 研发交付。
 > Entity: `https://www.klai.top/#organization` · Author: `https://www.klai.top/#person-wuchihong`

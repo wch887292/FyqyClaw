@@ -2,14 +2,14 @@
  * GEO 自动化面板 —— 零依赖单页（中文、离线可用）。
  * 三栏：① 品牌内容包（投喂） ② 跑一次工作流 ③ 定时任务状态与启停。
  *
- * 署名：晋江市飞虹智科技企业管理有限公司 · 飞扬企源研发中心 · 吴赐虹
+ * 署名：晋江市虹启智信息咨询工作室 · 飞扬研发中心 · 吴赐虹
  */
 export const GEO_HTML = `<!doctype html>
 <html lang="zh-CN">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>GEO 自动化 · 飞虹智</title>
+<title>GEO 自动化 · 虹启智</title>
 <style>
   :root { --bg:#0f1115; --card:#1a1d24; --line:#2a2f3a; --fg:#e8eaed; --sub:#9aa3b2; --accent:#5b8def; --ok:#34c759; --warn:#ff9f0a; --red:#ff453a; }
   * { box-sizing:border-box; }

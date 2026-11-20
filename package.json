@@ -1,7 +1,7 @@
 {
   "name": "fyqyclaw",
   "version": "1.2.0",
-  "description": "FyqyClaw（飞扬企源AI）- 企业本地私有化智能体平台，含全流程AI开发能力",
+  "description": "FyqyClaw（飞扬AI）- 企业本地私有化智能体平台，含全流程AI开发能力",
   "author": "wch887292 <wch887292@users.noreply.github.com>",
   "license": "Apache-2.0",
   "main": "dist-electron/main.js",
@@ -125,7 +125,7 @@
       "artifactName": "FyqyClaw-${version}-linux-${arch}.${ext}",
       "category": "Development",
     "synopsis": "企业本地私有化智能体平台",
-    "description": "FyqyClaw（飞扬企源AI）- 企业本地私有化智能体平台，支持 IDE/SOLO 双模式，可插拔编排业务数字员工，数据本地私有化不出域"
+    "description": "FyqyClaw（飞扬AI）- 企业本地私有化智能体平台，支持 IDE/SOLO 双模式，可插拔编排业务数字员工，数据本地私有化不出域"
     }
   },
   "dependencies": {

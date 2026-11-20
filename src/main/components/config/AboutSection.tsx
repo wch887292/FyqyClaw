@@ -35,8 +35,8 @@ export function AboutSection() {
         <h3 style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-highlight)', marginBottom: 16 }}>
           产品信息
         </h3>
-        <InfoRow label="研发主体" value="晋江市飞虹智科技企业管理有限公司" />
-        <InfoRow label="研发中心" value="飞扬企源研发中心" />
+        <InfoRow label="研发主体" value="晋江市虹启智信息咨询工作室" />
+        <InfoRow label="研发中心" value="飞扬研发中心" />
         <InfoRow label="项目负责人" value="吴赐虹" />
         <InfoRow label="技术支持" value="361336873@qq.com" />
         <InfoRow label="官方网站" value="https://klai.top" />
@@ -85,7 +85,7 @@ export function AboutSection() {
       </div>
 
       <div style={{ textAlign: 'center', marginTop: 32, fontSize: 11, color: 'var(--text-secondary)', opacity: 0.6 }}>
-        © 2026 晋江市飞虹智科技企业管理有限公司 · 保留所有权利
+        © 2026 晋江市虹启智信息咨询工作室 · 保留所有权利
       </div>
     </div>
   )

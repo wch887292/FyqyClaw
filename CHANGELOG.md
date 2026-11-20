@@ -1,6 +1,6 @@
 # Changelog
 
-本文件记录 FyqyClaw（飞扬企源AI）所有值得注意的变更，格式参考 [Keep a Changelog](https://keepachangelog.com/)，版本号遵循 [语义化版本](https://semver.org/lang/zh-CN/)。
+本文件记录 FyqyClaw（飞扬AI）所有值得注意的变更，格式参考 [Keep a Changelog](https://keepachangelog.com/)，版本号遵循 [语义化版本](https://semver.org/lang/zh-CN/)。
 
 ## [1.2.0] - 2026-09-27
 
@@ -87,7 +87,7 @@
 - **LICENSE 识别**：修正 LICENSE 中不规范的连字符，便于 GitHub 正确识别 Apache-2.0。
 
 ### 变更
-- **开源协议**：由 MIT 变更为 **Apache License 2.0**（版权方：晋江市飞虹智科技企业管理有限公司），同步 LICENSE、README、FAQ、DISCLAIMER、DEPLOYMENT、应用内 LicenseSection 组件。
+- **开源协议**：由 MIT 变更为 **Apache License 2.0**（版权方：晋江市虹启智信息咨询工作室），同步 LICENSE、README、FAQ、DISCLAIMER、DEPLOYMENT、应用内 LicenseSection 组件。
 - **依赖**：`electron` 升级至 `^43.4.0`（补丁级安全 / 稳定性修复）。其余主版本（React 18、Vite 5、electron-builder 24、react-router 6、TypeScript 5.9 等）保持不变，跨主版本破坏性升级列为后续技术债，不在本版本范围。
 - **版本号**：`0.1.6` → `1.0.0`。
 
@@ -111,7 +111,7 @@
 ## [0.1.0] - 2026-06
 
 ### 新增
-- 首个开源版本，初始发布 FyqyClaw（飞扬企源AI）——全流程 AI 开发工具。
+- 首个开源版本，初始发布 FyqyClaw（飞扬AI）——全流程 AI 开发工具。
 - GitHub Actions 标签自动构建 Windows 安装包的 Release 工作流。
 
 ---

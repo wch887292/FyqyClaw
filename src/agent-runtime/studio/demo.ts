@@ -34,7 +34,7 @@ async function main(): Promise<void> {
     title: 'FyqyClaw 产品与报价说明',
     permission: 'public',
     content:
-      'FyqyClaw（飞扬企源AI）本地私有化智能体平台，标准版授权 3.8 万元起，含 5 个业务数字员工。\n' +
+      'FyqyClaw（飞扬AI）本地私有化智能体平台，标准版授权 3.8 万元起，含 5 个业务数字员工。\n' +
       '交付周期：签约后 5 个工作日内完成本地部署。售后提供 12 个月免费升级。',
   })
 

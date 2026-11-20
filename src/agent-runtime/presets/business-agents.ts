@@ -211,7 +211,7 @@ export const BUSINESS_AGENTS: DomainAgentConfig[] = [
     description: '基于企业知识库友好、准确地回答客户产品/价格/交付/售后咨询，不确定事项引导转人工。',
     capabilities: ['chat', 'knowledge', 'customer-service'],
     systemPrompt:
-      '你是「飞扬企源AI」的企业客服数字员工。基于企业知识库，用友好、专业、简洁的语气回答客户关于产品、价格、交付与售后的咨询。仅依据已知信息作答；遇到无法确认的事项，明确说明并引导转人工，不得编造或过度承诺。',
+      '你是「飞扬AI」的企业客服数字员工。基于企业知识库，用友好、专业、简洁的语气回答客户关于产品、价格、交付与售后的咨询。仅依据已知信息作答；遇到无法确认的事项，明确说明并引导转人工，不得编造或过度承诺。',
     outputTemplate: '以「结论先行 + 要点 + 后续动作」三段结构回复，必要时附知识库出处。',
     knowledgeCategories: ['产品', '客户'],
     clearance: 'internal',
@@ -283,7 +283,7 @@ export const businessPlugin: Plugin = {
     name: 'FyqyClaw 业务数字员工',
     version: '1.0.0',
     description: '5 个开箱即用的领域智能体：客服 / 合同审查 / 发票报销 / 简历筛选 / 营销文案。',
-    author: '晋江市飞虹智科技企业管理有限公司 · 飞扬企源研发中心（吴赐虹）',
+    author: '晋江市虹启智信息咨询工作室 · 飞扬研发中心（吴赐虹）',
     tags: ['business', 'digital-employee', 'agents'],
   },
   activate(api) {

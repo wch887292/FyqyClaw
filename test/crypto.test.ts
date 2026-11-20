@@ -49,7 +49,7 @@ describe('encryptApiKey / decryptApiKey 往返', () => {
 
   it('非 ASCII（中文 / emoji）密钥 UTF-8 往返不损坏', () => {
     resetSessionSalt()
-    const plain = 'sk-飞虹智科技密钥测试🔑abc123'
+    const plain = 'sk-虹启智科技密钥测试🔑abc123'
     const cipher = encryptApiKey(plain)
     expect(cipher).not.toBe(plain)
     expect(decryptApiKey(cipher)).toBe(plain)

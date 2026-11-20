@@ -289,7 +289,7 @@ export function SettingsPanel({ onClose }: SettingsPanelProps) {
                 版本 1.0.0
               </p>
               <p style={{ fontSize: 12, color: 'var(--text-secondary)', opacity: 0.7 }}>
-                晋江市飞虹智科技企业管理有限公司 · 飞扬企源研发中心
+                晋江市虹启智信息咨询工作室 · 飞扬研发中心
               </p>
               <p style={{ fontSize: 12, color: 'var(--text-secondary)', opacity: 0.7, marginTop: 4 }}>
                 项目负责人：吴赐虹

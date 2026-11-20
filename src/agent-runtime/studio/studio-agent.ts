@@ -92,7 +92,7 @@ export function compileEmployee(draft: DigitalEmployeeDraft, now = Date.now()): 
       name: normalized.name,
       version: '1.0.0',
       description: normalized.scenario,
-      author: 'Studio · 晋江市飞虹智科技企业管理有限公司 · 飞扬企源研发中心（吴赐虹）',
+      author: 'Studio · 晋江市虹启智信息咨询工作室 · 飞扬研发中心（吴赐虹）',
       tags: ['studio', 'digital-employee', normalized.role],
     },
     activate(api) {

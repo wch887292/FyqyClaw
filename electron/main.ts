@@ -103,7 +103,7 @@ function createWindow() {
     height: 900,
     minWidth: 1024,
     minHeight: 700,
-    title: 'FyqyClaw - 飞扬企源AI',
+    title: 'FyqyClaw - 飞扬AI',
     backgroundColor: '#1e1e1e',
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),

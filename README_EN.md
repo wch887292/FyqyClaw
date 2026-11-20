@@ -2,7 +2,7 @@
   <img src="docs/logo.svg" alt="FyqyClaw Logo" width="120" />
 </p>
 
-<h1 align="center">FyqyClaw · Feiyang Qiyuan AI</h1>
+<h1 align="center">FyqyClaw · Feiyang AI</h1>
 
 <p align="center">
   <b>Full-lifecycle AI-driven development tool — dual IDE + AI Agent modes, from requirements to code in one place</b>
@@ -35,11 +35,11 @@
 
 ## 📖 Introduction
 
-**FyqyClaw (Feiyang Qiyuan AI)** is a full-lifecycle development tool that deeply integrates large-model AI capabilities, covering the complete engineering chain: requirement breakdown, coding, project comprehension, debugging, code review, and change management.
+**FyqyClaw (Feiyang AI)** is a full-lifecycle development tool that deeply integrates large-model AI capabilities, covering the complete engineering chain: requirement breakdown, coding, project comprehension, debugging, code review, and change management.
 
 It supports **traditional IDE precision control** and **fully-autonomous AI Agent development** in two switchable modes, fitting both individual developers and enterprise-grade iterative workflows.
 
-> **Name meaning**: "Fyqy" is the pinyin abbreviation of "Feiyang Qiyuan" (飞扬企源). "Claw" implies precisely grabbing code and catching problems like a claw. Together it means "Feiyang Qiyuan's AI development weapon."
+> **Name meaning**: "Fyqy" is the pinyin abbreviation of "Feiyang" (飞扬). "Claw" implies precisely grabbing code and catching problems like a claw. Together it means "Feiyang's AI development weapon."
 
 ### Comparison with Cursor / Windsurf / Trae
 
@@ -318,7 +318,7 @@ Please follow the [Contributor Covenant](https://www.contributor-covenant.org/) 
 
 This project is open-sourced under the **Apache License 2.0 (Apache-2.0)** — see the [LICENSE](LICENSE) file for details.
 
-Copyright © 2026 [Jinjiang Feihongzhi Technology Enterprise Management Co., Ltd.](https://klai.top)
+Copyright © 2026 [Jinjiang Hongqizhi Technology Enterprise Management Co., Ltd.](https://klai.top)
 
 ---
 
@@ -326,15 +326,15 @@ Copyright © 2026 [Jinjiang Feihongzhi Technology Enterprise Management Co., Ltd
 
 - **Official site**: [https://klai.top](https://klai.top)
 - **Technical support**: 361336873@qq.com
-- **Project lead**: Wu Cihong (Feiyang Qiyuan R&D Center)
+- **Project lead**: Wu Cihong (Feiyang R&D Center)
 
 ---
 
 ## 🌐 Official Site & Related Open-Source Projects
 
-Maintained by **Jinjiang Feihongzhi Technology Enterprise Management Co., Ltd. · Feiyang Qiyuan R&D Center**, part of the Feihongzhi klAI open-source ecosystem.
+Maintained by **Jinjiang Hongqizhi Technology Enterprise Management Co., Ltd. · Feiyang R&D Center**, part of the Hongqizhi klAI open-source ecosystem.
 
-- 🏠 **Official site**: [https://klai.top](https://klai.top) — Feihongzhi klAI · Quanzhou manufacturing-AI service provider
+- 🏠 **Official site**: [https://klai.top](https://klai.top) — Hongqizhi klAI · Quanzhou manufacturing-AI service provider
 - 📦 **Open-source matrix**: [https://klai.top/opensource.html](https://klai.top/opensource.html) — all open-source projects
 - 📚 **AI knowledge base**: [https://kb.klai.top](https://kb.klai.top) — product docs & smart Q&A (MaxKB-powered)
 
@@ -343,11 +343,11 @@ Maintained by **Jinjiang Feihongzhi Technology Enterprise Management Co., Ltd. �
 | Project | Description |
 |------|------|
 | [GEO-SaaS](https://github.com/wch887292/geo-saa) | AI-driven GEO search optimization platform |
-| [Feihongzhi Enterprise AI Platform](https://github.com/wch887292/fyqy-ai-agent) | AI-native integrated management platform for SME manufacturers |
+| [Hongqizhi Enterprise AI Platform](https://github.com/wch887292/fyqy-ai-agent) | AI-native integrated management platform for SME manufacturers |
 | [FyqyClaw](https://github.com/wch887292/FyqyClaw) | Full-lifecycle AI-driven dev tool (IDE + AI Agent) (this repo) |
 | [Xingmian AI](https://github.com/wch887292/xmai) | Sleep-health WeChat mini-program + private-deployable backend |
 
-> ⭐ If this project helps you, please **Star** and share it so more people discover the Feihongzhi open-source ecosystem!
+> ⭐ If this project helps you, please **Star** and share it so more people discover the Hongqizhi open-source ecosystem!
 
 ---
 

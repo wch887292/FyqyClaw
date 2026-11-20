@@ -108,7 +108,7 @@ export const STUDIO_HTML = `<!DOCTYPE html>
     <div class="row" style="margin-top:12px">
       <button class="primary" id="btnCreate">创建并上线</button>
     </div>
-    <div class="sig">晋江市飞虹智科技企业管理有限公司 · 飞扬企源研发中心</div>
+    <div class="sig">晋江市虹启智信息咨询工作室 · 飞扬研发中心</div>
   </section>
 
   <section class="card">

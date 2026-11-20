@@ -10,7 +10,7 @@
  * 未来接真实第三方（如某数字人 / 短视频 API）：在 secrets 配置 marketingApiEndpoint + marketingApiKey，
  * 并把 HttpMarketingProvider 内的 TODO(接入点) 替换为真实请求即可，上层代码无需改动。
  *
- * 署名：晋江市飞虹智科技企业管理有限公司 · 飞扬企源研发中心 · 吴赐虹
+ * 署名：晋江市虹启智信息咨询工作室 · 飞扬研发中心 · 吴赐虹
  */
 import type { Connector, ConnectorResult, RuntimeContext } from '../core/types'
 
