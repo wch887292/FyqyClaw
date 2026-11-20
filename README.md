@@ -1,5 +1,7 @@
 > **English / 英文文档**：[README_EN.md](README_EN.md) · [FAQ (English)](FAQ_EN.md)
 
+> 📦 **已同步镜像至 GitCode**：[gcw_YuRlTP0G/FyqyClaw](https://gitcode.com/gcw_YuRlTP0G/FyqyClaw) —— 欢迎前往 Star 与关注，一起提升开源曝光度！
+
 <p align="center">
   <img src="docs/logo.svg" alt="FyqyClaw Logo" width="120" />
 </p>
