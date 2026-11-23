@@ -11,6 +11,7 @@ import { MarketingConnector } from '../connectors/marketing-connector'
 import { geoPlugin } from '../geo/geo-agent'
 import { createSecurityPlugin } from '../platform/security-plugin'
 import { createMarketPlugin } from '../platform/marketplace'
+import { OpenAICompatProvider } from '../builtins/model-providers'
 import type { Plugin } from '../core/types'
 
 export interface FyqyRuntimeOptions {
@@ -34,9 +35,62 @@ export interface FyqyRuntimeOptions {
   geoMaterialDir?: string
   /** 平台安全数据目录（团队账号 + 审计落盘，零出境）；不传则仅内存。 */
   securityDir?: string
+  /**
+   * 真实模型接入（OpenAI 兼容端点：本地 Ollama / 私有部署 / 公有云）。
+   * 启动时探测端点可达性：可达 → 注册 model-openai-compat 并启用「真答」；
+   * 不可达 → 诚实回落 model-echo 演示模型，不伪造回答。
+   */
+  openaiCompat?: { endpoint: string; models: string[]; name?: string }
+}
+
+/**
+ * 探测 OpenAI 兼容端点是否可达（GET {endpoint}/models）。
+ * 短超时快速失败，避免拖慢无模型环境下的启动。
+ */
+async function probeOpenAICompat(endpoint: string, timeoutMs = 2500): Promise<boolean> {
+  try {
+    const ctrl = new AbortController()
+    const timer = setTimeout(() => ctrl.abort(), timeoutMs)
+    const res = await fetch(`${endpoint.replace(/\/$/, '')}/models`, { signal: ctrl.signal })
+    clearTimeout(timer)
+    return res.ok
+  } catch {
+    return false
+  }
 }
 
 export async function createFyqyRuntime(opts: FyqyRuntimeOptions = {}): Promise<AgentRuntime> {
+  // 真实模型接入（可插拔 model-provider 扩展点）：启动时探测，可达则用「真答」，不可达则诚实回落 echo
+  let realModelPlugin: Plugin | null = null
+  let modelProviderId = opts.modelProvider
+  if (opts.openaiCompat?.endpoint) {
+    const ep = opts.openaiCompat.endpoint
+    const models =
+      opts.openaiCompat.models.length > 0 ? opts.openaiCompat.models : ['qwen2.5-coder:1.5b']
+    if (await probeOpenAICompat(ep)) {
+      realModelPlugin = {
+        manifest: {
+          id: 'fyqy-real-model',
+          name: opts.openaiCompat.name ?? 'Real Model (OpenAI-compat)',
+          version: '1.0.0',
+          description: `真实模型接入：${ep}（${models.join(', ')}），数据不出本地。`,
+          author: '晋江市虹启智信息咨询工作室 · 飞扬研发中心（吴赐虹）',
+          tags: ['model', 'openai-compat', 'local'],
+        },
+        activate(api) {
+          api.register(new OpenAICompatProvider(ep, models, opts.openaiCompat?.name))
+        },
+      }
+      modelProviderId = 'model-openai-compat'
+      console.log(
+        `[fyqy] 已接入真实模型服务 ${ep}（models: ${models.join(', ')}），试运行为「真答」模式`,
+      )
+    } else {
+      console.warn(
+        `[fyqy] 未探测到 OpenAI 兼容模型服务 ${ep}，回落 model-echo 演示模型（诚实降级，不伪造回答）`,
+      )
+    }
+  }
   const secrets = new Map(Object.entries(opts.secrets ?? {}))
   const runtime = new AgentRuntime({
     config: {
@@ -45,7 +99,7 @@ export async function createFyqyRuntime(opts: FyqyRuntimeOptions = {}): Promise<
       knowledgeBase: opts.knowledgeBase,
       knowledgeDir: opts.knowledgeDir,
       tenantId: opts.tenantId,
-      modelProvider: opts.modelProvider,
+      modelProvider: modelProviderId,
       mcpBridge: opts.mcpBridge,
       geoMaterialDir: opts.geoMaterialDir,
       securityDir: opts.securityDir,
@@ -85,6 +139,7 @@ export async function createFyqyRuntime(opts: FyqyRuntimeOptions = {}): Promise<
     geoPlugin,
     securityPlugin,
     marketPlugin,
+    ...(realModelPlugin ? [realModelPlugin] : []),
   ])
   return runtime
 }

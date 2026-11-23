@@ -57,6 +57,8 @@ export interface GatewayOptions {
   geoMaterialDir?: string
   /** 平台安全数据目录（团队账号 + 审计落盘，零出境）；不传则仅内存。 */
   securityDir?: string
+  /** 真实模型接入（OpenAI 兼容端点，如本地 Ollama）；启动时探测，可达启用「真答」，不可达诚实回落 echo。 */
+  openaiCompat?: { endpoint: string; models: string[]; name?: string }
 }
 
 export async function startGateway(opts: GatewayOptions = {}): Promise<{
@@ -70,9 +72,12 @@ export async function startGateway(opts: GatewayOptions = {}): Promise<{
     knowledgeDir: opts.kbDir,
     geoMaterialDir: opts.geoMaterialDir,
     securityDir: opts.securityDir,
+    openaiCompat: opts.openaiCompat,
   })
   const studio = new Studio(runtime, { storeDir: opts.studioDir })
   await studio.load()
+  // 会话 → 智能体 绑定表：修复发消息时 agentId 被硬编码成 agent-solo、业务数字员工知识库编排失效的问题
+  const sessionAgents = new Map<string, string>()
   const kb = runtime.getService<KnowledgeBase>('knowledgeBase')
   if (!kb) throw new Error('知识库服务未注册，无法启动网关')
   const kbConsole = new KnowledgeConsole(kb)
@@ -80,7 +85,7 @@ export async function startGateway(opts: GatewayOptions = {}): Promise<{
   const host = opts.host ?? '0.0.0.0'
 
   const server = createServer((req, res) => {
-    handle(req, res, runtime, studio, kbConsole).catch((err) => {
+    handle(req, res, runtime, studio, kbConsole, sessionAgents).catch((err) => {
       res.statusCode = 500
       res.end(JSON.stringify({ error: (err as Error).message }))
     })
@@ -116,6 +121,7 @@ async function handle(
   runtime: AgentRuntime,
   studio: Studio,
   kbConsole: KnowledgeConsole,
+  sessionAgents: Map<string, string>,
 ): Promise<void> {
   const url = new URL(req.url ?? '/', `http://${req.headers.host ?? 'localhost'}`)
   const path = url.pathname
@@ -491,16 +497,20 @@ async function handle(
 
   if (method === 'POST' && path === '/sessions') {
     const body = (await readBody(req)) as { agentId?: string }
-    const session = runtime.createSession(body.agentId ?? 'agent-solo')
+    const agentId = body.agentId ?? 'agent-solo'
+    const session = runtime.createSession(agentId)
+    // 记录会话与智能体的绑定：发消息时按原 agent 恢复，避免被硬编码成 agent-solo
+    sessionAgents.set(session.sessionId, agentId)
     res.setHeader('content-type', 'application/json')
-    res.end(JSON.stringify({ sessionId: session.sessionId }))
+    res.end(JSON.stringify({ sessionId: session.sessionId, agentId }))
     return
   }
 
   const m = path.match(/^\/sessions\/([^/]+)\/messages$/)
   if (method === 'POST' && m) {
     const body = (await readBody(req)) as { message: string }
-    const session = runtime.createSession('agent-solo', { sessionId: m[1] })
+    // 按创建会话时登记的 agentId 恢复（业务数字员工才能走到自身知识库/合规编排）
+    const session = runtime.createSession(sessionAgents.get(m[1]) ?? 'agent-solo', { sessionId: m[1] })
     res.setHeader('content-type', 'text/event-stream')
     res.setHeader('cache-control', 'no-cache')
     res.setHeader('connection', 'keep-alive')

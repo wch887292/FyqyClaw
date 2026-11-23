@@ -21,6 +21,8 @@ const SAMPLES = [
       'FyqyClaw（飞扬AI）是本地私有化企业智能体平台，数据存于企业自有设备、不上公有云。\n' +
       '标准版授权 3.8 万元起，含客服应答、合同审查、发票报销、简历筛选、营销文案五个业务数字员工。\n' +
       '交付周期：签约后 5 个工作日内完成本地部署；售后提供 12 个月免费升级。\n' +
+      '常见问法对照：多少钱 / 价格 / 报价 → 标准版 3.8 万元起；多久交付 / 交付周期 → 签约后 5 个工作日；\n' +
+      '售后 / 升级 → 12 个月免费升级。\n' +
       '如客户已有金蝶 / 用友系统，平台以「AI 辅助 + 接口对接」方式协同，不替代其账务与供应链主流程。',
   },
   {
@@ -46,11 +48,18 @@ const SAMPLES = [
 async function main(): Promise<void> {
   // geoMaterialDir 指向仓库根的 GEO 物料（llms.txt / GEO-品牌事实页.md），让 T2.4 投喂技能真读物料
   // securityDir 让 T3 平台账号与审计落盘本地（零出境），重启后仍在
+  // openaiCompat 接入本地 Ollama 真实模型：启动时探测，可达则试运行为「真答」，不可达诚实回落 echo
   const gw = await startGateway({
     port: 8799,
     host: '127.0.0.1',
     geoMaterialDir: 'H:/Fyqyclaw',
     securityDir: 'H:/Fyqyclaw/.platform-security',
+    openaiCompat: {
+      endpoint: 'http://127.0.0.1:11434/v1',
+      // 首选轻量模型（本机实测 3 秒级响应）；8B 质量更高但 CPU 推理约 1 分钟，列为可选
+      models: ['qwen2.5-coder:1.5b', 'qwen3-8b-opt:latest'],
+      name: 'Ollama 本地模型',
+    },
   })
 
   const kb = gw.runtime.getService<KnowledgeBase>('knowledgeBase')

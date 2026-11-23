@@ -2,6 +2,21 @@
 
 本文件记录 FyqyClaw（飞扬AI）所有值得注意的变更，格式参考 [Keep a Changelog](https://keepachangelog.com/)，版本号遵循 [语义化版本](https://semver.org/lang/zh-CN/)。
 
+## [1.3.0] - 2026-11-23
+
+「真实模型接入」版本 —— Studio 试运行从「回显演示」升级为「真答」，并修复业务数字员工知识库编排链路。
+
+### 新增
+- **真实模型接入（可插拔 model-provider）**：`createFyqyRuntime` / `startGateway` 新增 `openaiCompat` 选项（`endpoint` + `models` + `name`）。启动时探测 OpenAI 兼容端点（`GET {endpoint}/models`，2.5s 超时）：可达 → 注册 `model-openai-compat` 并启用「真答」；不可达 → 诚实回落 `model-echo` 演示模型，不伪造回答。
+- **本地 Ollama 演示接线**：`studio/serve.ts` 默认接入 `http://127.0.0.1:11434/v1`，模型列表 `qwen2.5-coder:1.5b`（首选，本机实测约 3s 级响应）/ `qwen3-8b-opt:latest`（更高质量，CPU 推理约 1 分钟）。数据全程不出本地。
+
+### 修复
+- **网关会话智能体丢失（严重）**：`POST /sessions/:id/messages` 此前硬编码 `createSession('agent-solo')`，导致创建会话时指定的业务数字员工（如 `agent-cs`）在发消息时被替换成 SOLO 演示智能体，其知识库检索永远走占位技能「未命中」。现网关维护 `sessionId → agentId` 绑定表，发消息按原智能体恢复，业务数字员工的知识库 RAG + 真模型编排恢复（端到端复验：`hitCount=1`，回答与知识库一致）。
+- **演示知识可命中性**：`serve.ts` 示例知识补充「常见问法对照」（多少钱 / 价格 / 报价 → 3.8 万元起等），避免 BM25 词面不匹配导致演示问题不命中。
+
+### 验证
+- 全量 `tsc --noEmit` 通过；端到端验证：`/meta` 含 `model-openai-compat`；`POST /v1/chat/completions` 与 `/sessions/:id/messages`（agent-cs）均为真实模型回答，且与知识库内容一致。
+
 ## [1.2.0] - 2026-09-27
 
 「企业本地私有化智能体平台」架构升级版本 —— 将智能体重构为**可插拔 / 可独立 / 可对接**的平台底座，并补齐数据中台、业务数字员工、非技术工作台、营销 / GEO 自动化、权限审计与数字员工市场。
